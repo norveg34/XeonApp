@@ -5,13 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>XeonApp</title>
     
-    <!-- iOS / PWA Teljeskörű Meta Tag-ek -->
+    <!-- iOS / PWA Meta Tag-ek -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="XeonApp">
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2111/2111370.png">
     
-    <!-- Manifest hivatkozás -->
     <link rel="manifest" href="manifest.json">
     
     <!-- Tailwind & FontAwesome -->
@@ -20,7 +19,7 @@
     
     <style>
         body { background-color: #0d1117; color: #e6edf3; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
-        .glass { background: rgba(22, 27, 34, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .glass { background: rgba(22, 27, 34, 0.95); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
         .screen-view { display: none; }
@@ -29,8 +28,8 @@
 </head>
 <body class="pb-20">
 
-    <!-- IOS TELEPÍTÉSI SEGÉDLET SÁV (Csak iPhone/iPad Safari böngészőben látszik, ha még nincs appként megnyitva) -->
-    <div id="iosInstallBanner" class="hidden fixed bottom-16 left-4 right-4 z-50 glass bg-indigo-950/90 border border-indigo-500/50 p-3.5 rounded-2xl shadow-2xl flex items-center justify-between text-xs">
+    <!-- IOS TELEPÍTÉSI SEGÉDLET SÁV -->
+    <div id="iosInstallBanner" class="hidden fixed bottom-16 left-4 right-4 z-50 glass bg-indigo-950/95 border border-indigo-500/50 p-3.5 rounded-2xl shadow-2xl flex items-center justify-between text-xs">
         <div class="flex items-center space-x-3">
             <i class="fa-brands fa-apple text-2xl text-indigo-400"></i>
             <div>
@@ -41,22 +40,32 @@
         <button onclick="dismissIosBanner()" class="text-gray-400 hover:text-white px-2 py-1 font-bold">✕</button>
     </div>
 
-    <!-- 1. LOGIN SCREEN -->
+    <!-- 1. BEÉPÍTETT BEJELENTKEZÉSI KÉPERNYŐ (Nincs több prompt hiba mobilon!) -->
     <div id="loginScreen" class="screen-view active fixed inset-0 z-40 bg-[#0d1117] flex flex-col items-center justify-center p-6 text-center">
-        <div class="glass w-full max-w-sm p-8 rounded-3xl space-y-6 border-[#5865F2]/40 shadow-2xl shadow-[#5865F2]/20">
-            <div class="w-20 h-20 rounded-3xl bg-[#5865F2] flex items-center justify-center font-bold text-white mx-auto text-4xl shadow-lg shadow-[#5865F2]/50">
+        <div class="glass w-full max-w-sm p-8 rounded-3xl space-y-5 border-[#5865F2]/40 shadow-2xl shadow-[#5865F2]/20">
+            <div class="w-16 h-16 rounded-2xl bg-[#5865F2] flex items-center justify-center font-bold text-white mx-auto text-3xl shadow-lg shadow-[#5865F2]/50">
                 <i class="fa-brands fa-discord"></i>
             </div>
             <div>
-                <h1 class="text-2xl font-black text-white tracking-wide">XeonApp</h1>
-                <p class="text-xs text-gray-400 mt-1">Lépj be a Discord fiókoddal a folytatáshoz</p>
+                <h1 class="text-xl font-black text-white tracking-wide">XeonApp Belépés</h1>
+                <p class="text-xs text-gray-400 mt-1">Add meg a Discord neved a folytatáshoz</p>
             </div>
 
-            <button onclick="loginWithDiscord()" class="w-full bg-[#5865F2] hover:bg-[#4752C4] text-white font-bold text-sm py-3.5 rounded-2xl flex items-center justify-center space-x-3 shadow-lg shadow-[#5865F2]/40 transition transform active:scale-95">
-                <i class="fa-brands fa-discord text-lg"></i>
-                <span>Discord Bejelentkezés</span>
+            <div class="space-y-3 text-left">
+                <div>
+                    <label class="text-[11px] text-gray-400 font-bold ml-1 mb-1 block">Discord Neved</label>
+                    <input type="text" id="loginUsername" placeholder="pl. norveg34" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#5865F2]">
+                </div>
+                <div>
+                    <label class="text-[11px] text-gray-400 font-bold ml-1 mb-1 block">Admin PIN (Csak adminoknak)</label>
+                    <input type="password" id="loginPin" placeholder="Hagyd üresen, ha néző vagy" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#5865F2]">
+                </div>
+            </div>
+
+            <button onclick="submitLogin()" class="w-full bg-[#5865F2] hover:bg-[#4752C4] text-white font-bold text-sm py-3.5 rounded-xl shadow-lg shadow-[#5865F2]/40 transition transform active:scale-95">
+                <i class="fa-brands fa-discord mr-2"></i> Bejelentkezés
             </button>
-            <p class="text-[10px] text-gray-500">Biztonságos mobil hitelesítés.</p>
+            <p class="text-[10px] text-gray-500">A telefonod megjegyzi a belépést.</p>
         </div>
     </div>
 
@@ -250,12 +259,10 @@
         });
 
         function checkIosInstallPrompt() {
-            // Megnézzük, hogy iOS (iPhone/iPad) böngésző-e, és még NINCS-E standalone (app) módban futtatva
             const isIos = /iphone|ipad|ipod/.test(navigator.userAgent.toLowerCase());
             const isInStandaloneMode = ('standalone' in window.navigator) && (window.navigator.standalone);
 
             if (isIos && !isInStandaloneMode) {
-                // Megjelenítjük a segédlet sávot, ha még nem zárta be
                 if (!localStorage.getItem('ios_banner_dismissed')) {
                     document.getElementById('iosInstallBanner').classList.remove('hidden');
                 }
@@ -278,23 +285,26 @@
             }
         }
 
-        function loginWithDiscord() {
-            let username = prompt("Add meg a Discord neved a belépéshez:");
-            if (!username) return;
-            username = username.trim();
+        function submitLogin() {
+            const usernameInput = document.getElementById('loginUsername').value.trim();
+            const pinInput = document.getElementById('loginPin').value;
+
+            if (!usernameInput) {
+                alert('Kérlek add meg a Discord neved!');
+                return;
+            }
 
             let role = 'viewer';
-            if (username.toLowerCase() === 'norveg34' || username.toLowerCase() === 'xeonskorp') {
-                let pin = prompt("Add meg a titkos admin PIN-kódot:");
-                if (pin === ADMIN_SECRET_PIN) {
+            if (usernameInput.toLowerCase() === 'norveg34' || usernameInput.toLowerCase() === 'xeonskorp') {
+                if (pinInput === ADMIN_SECRET_PIN) {
                     role = 'admin';
                 } else {
-                    alert('Hibás PIN-kód! Nézőként léptettünk be.');
+                    alert('Hibás admin PIN-kód! Nézőként léptettünk be.');
                     role = 'viewer';
                 }
             }
-            
-            currentUser = { name: username, role: role };
+
+            currentUser = { name: usernameInput, role: role };
             localStorage.setItem('xeon_user', JSON.stringify(currentUser));
             checkAuthStatus();
         }
