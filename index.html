@@ -40,32 +40,22 @@
         <button onclick="dismissIosBanner()" class="text-gray-400 hover:text-white px-2 py-1 font-bold">✕</button>
     </div>
 
-    <!-- 1. BEÉPÍTETT BEJELENTKEZÉSI KÉPERNYŐ (Nincs több prompt hiba mobilon!) -->
+    <!-- 1. OAUTH2 LOGIN SCREEN -->
     <div id="loginScreen" class="screen-view active fixed inset-0 z-40 bg-[#0d1117] flex flex-col items-center justify-center p-6 text-center">
-        <div class="glass w-full max-w-sm p-8 rounded-3xl space-y-5 border-[#5865F2]/40 shadow-2xl shadow-[#5865F2]/20">
-            <div class="w-16 h-16 rounded-2xl bg-[#5865F2] flex items-center justify-center font-bold text-white mx-auto text-3xl shadow-lg shadow-[#5865F2]/50">
+        <div class="glass w-full max-w-sm p-8 rounded-3xl space-y-6 border-[#5865F2]/40 shadow-2xl shadow-[#5865F2]/20">
+            <div class="w-20 h-20 rounded-3xl bg-[#5865F2] flex items-center justify-center font-bold text-white mx-auto text-4xl shadow-lg shadow-[#5865F2]/50">
                 <i class="fa-brands fa-discord"></i>
             </div>
             <div>
-                <h1 class="text-xl font-black text-white tracking-wide">XeonApp Belépés</h1>
-                <p class="text-xs text-gray-400 mt-1">Add meg a Discord neved a folytatáshoz</p>
+                <h1 class="text-2xl font-black text-white tracking-wide">XeonApp</h1>
+                <p class="text-xs text-gray-400 mt-1">Lépj be a hivatalos Discord fiókoddal</p>
             </div>
 
-            <div class="space-y-3 text-left">
-                <div>
-                    <label class="text-[11px] text-gray-400 font-bold ml-1 mb-1 block">Discord Neved</label>
-                    <input type="text" id="loginUsername" placeholder="pl. norveg34" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#5865F2]">
-                </div>
-                <div>
-                    <label class="text-[11px] text-gray-400 font-bold ml-1 mb-1 block">Admin PIN (Csak adminoknak)</label>
-                    <input type="password" id="loginPin" placeholder="Hagyd üresen, ha néző vagy" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#5865F2]">
-                </div>
-            </div>
-
-            <button onclick="submitLogin()" class="w-full bg-[#5865F2] hover:bg-[#4752C4] text-white font-bold text-sm py-3.5 rounded-xl shadow-lg shadow-[#5865F2]/40 transition transform active:scale-95">
-                <i class="fa-brands fa-discord mr-2"></i> Bejelentkezés
+            <button onclick="redirectToDiscord()" class="w-full bg-[#5865F2] hover:bg-[#4752C4] text-white font-bold text-sm py-3.5 rounded-2xl flex items-center justify-center space-x-3 shadow-lg shadow-[#5865F2]/40 transition transform active:scale-95">
+                <i class="fa-brands fa-discord text-lg"></i>
+                <span>Discord Bejelentkezés</span>
             </button>
-            <p class="text-[10px] text-gray-500">A telefonod megjegyzi a belépést.</p>
+            <p class="text-[10px] text-gray-500">Biztonságos OAuth2 hitelesítés.</p>
         </div>
     </div>
 
@@ -249,14 +239,61 @@
 
     <!-- LOGIKA SCRIPT -->
     <script>
-        const ADMIN_SECRET_PIN = "xeon2026";
+        // IDE ÍRD BE A DISCORD DEVELOPER PORTALON KAPOTT CLIENT ID-DAT:
+        const DISCORD_CLIENT_ID = "ITT_ADD_MEG_A_CLIENT_ID_D AT";
+
         let currentUser = JSON.parse(localStorage.getItem('xeon_user')) || null;
         let userPoints = parseInt(localStorage.getItem('xeon_points')) || 1250;
 
         document.addEventListener('DOMContentLoaded', () => {
-            checkAuthStatus();
             checkIosInstallPrompt();
+
+            // Ellenőrizzük, hogy a Discord OAuth2 visszairányított-e a tokennel
+            const fragment = window.location.hash.substring(1);
+            const params = new URLSearchParams(fragment);
+            const accessToken = params.get('access_token');
+
+            if (accessToken) {
+                // Lekérjük a Discord felhasználó adatait
+                fetch('https://discord.com/api/users/@me', {
+                    headers: { authorization: `Bearer ${accessToken}` }
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.username) {
+                        const username = data.username;
+                        // Automatikusan admin lesz, ha a te fiókod lép be
+                        const role = (username.toLowerCase() === 'norveg34' || username.toLowerCase() === 'xeonskorp') ? 'admin' : 'viewer';
+                        
+                        currentUser = { name: username, role: role };
+                        localStorage.setItem('xeon_user', JSON.stringify(currentUser));
+                        
+                        // Tiszta URL hash
+                        window.history.replaceState({}, document.title, window.location.pathname);
+                        checkAuthStatus();
+                    } else {
+                        alert('Hiba történt a Discord adatok lekérésekor.');
+                        checkAuthStatus();
+                    }
+                })
+                .catch(err => {
+                    console.error('Discord API hiba:', err);
+                    checkAuthStatus();
+                });
+            } else {
+                checkAuthStatus();
+            }
         });
+
+        function redirectToDiscord() {
+            if (DISCORD_CLIENT_ID.includes("ITT_")) {
+                alert("Kérlek add meg a kódban a DISCORD_CLIENT_ID-t!");
+                return;
+            }
+            const redirectUri = window.location.origin + window.location.pathname;
+            const discordAuthUrl = `https://discord.com/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=token&scope=identify`;
+            window.location.href = discordAuthUrl;
+        }
 
         function checkIosInstallPrompt() {
             const isIos = /iphone|ipad|ipod/.test(navigator.userAgent.toLowerCase());
@@ -283,30 +320,6 @@
                 document.getElementById('loginScreen').classList.add('active');
                 document.getElementById('appScreen').classList.remove('active');
             }
-        }
-
-        function submitLogin() {
-            const usernameInput = document.getElementById('loginUsername').value.trim();
-            const pinInput = document.getElementById('loginPin').value;
-
-            if (!usernameInput) {
-                alert('Kérlek add meg a Discord neved!');
-                return;
-            }
-
-            let role = 'viewer';
-            if (usernameInput.toLowerCase() === 'norveg34' || usernameInput.toLowerCase() === 'xeonskorp') {
-                if (pinInput === ADMIN_SECRET_PIN) {
-                    role = 'admin';
-                } else {
-                    alert('Hibás admin PIN-kód! Nézőként léptettünk be.');
-                    role = 'viewer';
-                }
-            }
-
-            currentUser = { name: usernameInput, role: role };
-            localStorage.setItem('xeon_user', JSON.stringify(currentUser));
-            checkAuthStatus();
         }
 
         function logout() {
