@@ -1,4 +1,4 @@
-const CACHE_NAME = "xeonapp-v2";
+const CACHE_NAME = "xeonapp-v3";
 
 const FILES_TO_CACHE = [
     "./",
@@ -47,22 +47,27 @@ self.addEventListener("activate", event => {
                 return Promise.all(
 
                     keys
-                        .filter(
-                            key =>
-                                key !== CACHE_NAME
-                        )
-                        .map(
-                            key =>
-                                caches.delete(key)
-                        )
+                        .filter(key => {
+
+                            return key !== CACHE_NAME;
+
+                        })
+                        .map(key => {
+
+                            return caches.delete(key);
+
+                        })
 
                 );
 
             })
+            .then(() => {
+
+                return self.clients.claim();
+
+            })
 
     );
-
-    self.clients.claim();
 
 });
 
@@ -73,14 +78,23 @@ self.addEventListener("activate", event => {
 
 self.addEventListener("fetch", event => {
 
+    const request =
+        event.request;
+
     const url =
         new URL(
-            event.request.url
+            request.url
         );
 
 
-    // API / AUTH kéréseket
-    // nem kezeljük cache-ből.
+    // =====================================================
+    // API / AUTH
+    // =====================================================
+
+    /*
+     * Discord OAuth és API kéréseket
+     * SOHA nem cache-elünk.
+     */
 
     if (
         url.pathname.startsWith("/api/") ||
@@ -92,7 +106,9 @@ self.addEventListener("fetch", event => {
     }
 
 
-    // Külső domaineket nem kezelünk.
+    // =====================================================
+    // KÜLSŐ DOMAIN
+    // =====================================================
 
     if (
         url.origin !==
@@ -104,16 +120,99 @@ self.addEventListener("fetch", event => {
     }
 
 
+    // =====================================================
+    // HTML
+    // =====================================================
+
+    /*
+     * Az index.html mindig a szerverről
+     * legyen lekérve.
+     *
+     * Ez különösen fontos Discord OAuth
+     * javítások után.
+     */
+
+    if (
+        request.mode === "navigate" ||
+        request.destination === "document"
+    ) {
+
+        event.respondWith(
+
+            fetch(request, {
+                cache: "no-store"
+            })
+            .then(response => {
+
+                return response;
+
+            })
+            .catch(() => {
+
+                return caches.match(
+                    "./index.html"
+                );
+
+            })
+
+        );
+
+        return;
+
+    }
+
+
+    // =====================================================
+    // STATIKUS FÁJLOK
+    // =====================================================
+
     event.respondWith(
 
         caches
-            .match(event.request)
-            .then(response => {
+            .match(request)
+            .then(cachedResponse => {
 
-                return (
-                    response ||
-                    fetch(event.request)
-                );
+                if (cachedResponse) {
+
+                    return cachedResponse;
+
+                }
+
+
+                return fetch(request)
+                    .then(response => {
+
+                        /*
+                         * Csak sikeres válaszokat cache-elünk.
+                         */
+
+                        if (
+                            response &&
+                            response.status === 200 &&
+                            response.type === "basic"
+                        ) {
+
+                            const responseClone =
+                                response.clone();
+
+
+                            caches
+                                .open(CACHE_NAME)
+                                .then(cache => {
+
+                                    cache.put(
+                                        request,
+                                        responseClone
+                                    );
+
+                                });
+
+                        }
+
+
+                        return response;
+
+                    });
 
             })
 
