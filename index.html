@@ -43,7 +43,7 @@
                 <i class="fa-brands fa-discord text-lg"></i>
                 <span>Discord Bejelentkezés</span>
             </button>
-            <p class="text-[10px] text-gray-500">Biztonságos OAuth2 hitelesítés.</p>
+            <p class="text-[10px] text-gray-500">Biztonságos OAuth2 hitelesítés GitHub Pages-en.</p>
         </div>
     </div>
 
@@ -228,19 +228,17 @@
     <!-- LOGIKA SCRIPT -->
     <script>
         // ÍRD BE IDE A DISCORD DEVELOPER PORTALON KAPOTT CLIENT ID-DAT:
-        const DISCORD_CLIENT_ID = "AZ_ÉN_CLIENT_ID_M IT_ITT_CSERÉLJ_LE"; 
+        const DISCORD_CLIENT_ID = "1557476441237753866"; 
 
         let currentUser = JSON.parse(localStorage.getItem('xeon_user')) || null;
         let userPoints = parseInt(localStorage.getItem('xeon_points')) || 1250;
 
         document.addEventListener('DOMContentLoaded', () => {
-            // Ellenőrizzük, hogy a Discord OAuth2 visszairányított-e a tokennel (#access_token)
             const fragment = window.location.hash.substring(1);
             const params = new URLSearchParams(fragment);
             const accessToken = params.get('access_token');
 
             if (accessToken) {
-                // Lekérjük a Discord felhasználó adatait a kapott token alapján
                 fetch('https://discord.com/api/users/@me', {
                     headers: { authorization: `Bearer ${accessToken}` }
                 })
@@ -248,13 +246,11 @@
                 .then(data => {
                     if (data.username) {
                         const username = data.username;
-                        // Ha a te fiókod lép be, automatikusan admin lesz
                         const role = (username.toLowerCase() === 'norveg34') ? 'admin' : 'viewer';
                         
                         currentUser = { name: username, role: role };
                         localStorage.setItem('xeon_user', JSON.stringify(currentUser));
                         
-                        // Tiszta URL hash
                         window.history.replaceState({}, document.title, window.location.pathname);
                         checkAuthStatus();
                     }
