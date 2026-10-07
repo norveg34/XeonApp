@@ -1,18 +1,45 @@
 <!DOCTYPE html>
 <html lang="hu">
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    >
 
     <title>XeonApp - Streamer Közösség</title>
 
-    <meta name="theme-color" content="#0d1117">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="XeonApp">
+    <meta
+        name="theme-color"
+        content="#0d1117"
+    >
 
-    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2111/2111370.png">
-    <link rel="manifest" href="manifest.json">
+    <meta
+        name="apple-mobile-web-app-capable"
+        content="yes"
+    >
+
+    <meta
+        name="apple-mobile-web-app-status-bar-style"
+        content="black-translucent"
+    >
+
+    <meta
+        name="apple-mobile-web-app-title"
+        content="XeonApp"
+    >
+
+    <link
+        rel="apple-touch-icon"
+        href="https://cdn-icons-png.flaticon.com/512/2111/2111370.png"
+    >
+
+    <link
+        rel="manifest"
+        href="manifest.json"
+    >
 
     <script src="https://cdn.tailwindcss.com"></script>
 
@@ -22,10 +49,16 @@
     >
 
     <style>
+
         body {
             background-color: #0d1117;
             color: #e6edf3;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-family:
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                Roboto,
+                sans-serif;
             -webkit-tap-highlight-color: transparent;
         }
 
@@ -50,10 +83,13 @@
         .screen-view.active {
             display: block;
         }
+
     </style>
+
 </head>
 
 <body class="pb-20">
+
 
 <!-- ========================================================= -->
 <!-- LOGIN -->
@@ -64,13 +100,18 @@
     class="screen-view active fixed inset-0 z-50 bg-[#0d1117] flex flex-col items-center justify-center p-6 text-center"
 >
 
-    <div class="glass w-full max-w-sm p-8 rounded-3xl space-y-5 border-[#5865F2]/40 shadow-2xl shadow-[#5865F2]/20">
+    <div
+        class="glass w-full max-w-sm p-8 rounded-3xl space-y-5 border-[#5865F2]/40 shadow-2xl shadow-[#5865F2]/20"
+    >
 
-        <div class="w-20 h-20 rounded-3xl bg-[#5865F2] flex items-center justify-center font-bold text-white mx-auto text-4xl shadow-lg shadow-[#5865F2]/50">
+        <div
+            class="w-20 h-20 rounded-3xl bg-[#5865F2] flex items-center justify-center font-bold text-white mx-auto text-4xl shadow-lg shadow-[#5865F2]/50"
+        >
             <i class="fa-brands fa-discord"></i>
         </div>
 
         <div>
+
             <h1 class="text-2xl font-black text-white tracking-wide">
                 XeonApp
             </h1>
@@ -78,6 +119,7 @@
             <p class="text-xs text-gray-400 mt-1">
                 Jelentkezz be a Discord-fiókoddal
             </p>
+
         </div>
 
         <button
@@ -85,8 +127,11 @@
             onclick="loginWithDiscord()"
             class="w-full bg-[#5865F2] hover:bg-[#4752C4] text-white font-bold text-sm py-3.5 rounded-2xl shadow-lg shadow-[#5865F2]/40 transition transform active:scale-95"
         >
+
             <i class="fa-brands fa-discord mr-2"></i>
+
             Bejelentkezés Discorddal
+
         </button>
 
         <p
@@ -107,21 +152,29 @@
 
 <div id="appScreen" class="screen-view">
 
+
     <!-- HEADER -->
 
-    <header class="glass sticky top-0 z-40 px-4 py-3 flex justify-between items-center border-b border-gray-800">
+    <header
+        class="glass sticky top-0 z-40 px-4 py-3 flex justify-between items-center border-b border-gray-800"
+    >
 
         <div class="flex items-center space-x-2">
 
-            <div class="w-9 h-9 rounded-xl bg-[#5865F2] flex items-center justify-center font-bold text-white shadow-lg shadow-[#5865F2]/30">
+            <div
+                class="w-9 h-9 rounded-xl bg-[#5865F2] flex items-center justify-center font-bold text-white shadow-lg shadow-[#5865F2]/30"
+            >
                 <i class="fa-brands fa-discord"></i>
             </div>
 
-            <span class="font-bold text-lg tracking-wide text-white">
+            <span
+                class="font-bold text-lg tracking-wide text-white"
+            >
                 XeonApp
             </span>
 
         </div>
+
 
         <div class="flex items-center space-x-3">
 
@@ -137,12 +190,14 @@
                 id="userBadge"
                 class="text-xs px-3 py-1.5 rounded-full bg-gray-800 border border-gray-700 flex items-center space-x-2"
             >
+
                 <span
                     id="userName"
                     class="text-indigo-300 font-bold"
                 >
                     Vendég
                 </span>
+
             </div>
 
         </div>
@@ -150,9 +205,7 @@
     </header>
 
 
-    <!-- ========================================================= -->
     <!-- MAIN -->
-    <!-- ========================================================= -->
 
     <main class="max-w-md mx-auto p-4 space-y-4">
 
@@ -164,11 +217,15 @@
             class="tab-content active space-y-4"
         >
 
-            <div class="glass p-4 rounded-2xl bg-gradient-to-r from-indigo-900/40 to-purple-900/40 border-indigo-500/30 flex justify-between items-center">
+            <div
+                class="glass p-4 rounded-2xl bg-gradient-to-r from-indigo-900/40 to-purple-900/40 border-indigo-500/30 flex justify-between items-center"
+            >
 
                 <div>
 
-                    <span class="text-xs uppercase tracking-wider text-indigo-300 font-semibold">
+                    <span
+                        class="text-xs uppercase tracking-wider text-indigo-300 font-semibold"
+                    >
                         Aktív Pontok
                     </span>
 
@@ -181,20 +238,27 @@
 
                 </div>
 
+
                 <button
                     onclick="claimDailyBonus()"
                     class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold px-4 py-3 rounded-xl shadow-lg shadow-indigo-600/30 flex flex-col items-center"
                 >
+
                     <i class="fa-solid fa-gift text-lg mb-1"></i>
+
                     <span>Napi Ajándék</span>
+
                 </button>
 
             </div>
 
 
             <h2 class="text-base font-bold text-white mt-6 mb-3">
+
                 <i class="fa-solid fa-newspaper mr-2 text-[#5865F2]"></i>
+
                 Közösségi Hírek
+
             </h2>
 
 
@@ -202,7 +266,9 @@
 
                 <div class="glass p-4 rounded-2xl">
 
-                    <span class="text-[10px] bg-indigo-500/20 text-indigo-300 px-2 py-0.5 rounded-full font-semibold">
+                    <span
+                        class="text-[10px] bg-indigo-500/20 text-indigo-300 px-2 py-0.5 rounded-full font-semibold"
+                    >
                         Hír
                     </span>
 
@@ -231,9 +297,13 @@
             <div class="flex justify-between items-center">
 
                 <h2 class="text-base font-bold text-white">
+
                     <i class="fa-solid fa-calendar-days mr-2 text-[#5865F2]"></i>
+
                     Heti Menetrend
+
                 </h2>
+
 
                 <a
                     href="https://www.twitch.tv/xeonskorpofficial/schedule"
@@ -241,8 +311,11 @@
                     rel="noopener noreferrer"
                     class="text-xs bg-[#5865F2] hover:bg-[#4752C4] px-3 py-1.5 rounded-xl text-white font-semibold flex items-center"
                 >
+
                     <i class="fa-brands fa-twitch mr-1"></i>
+
                     Twitch
+
                 </a>
 
             </div>
@@ -253,9 +326,12 @@
                 class="glass p-4 rounded-2xl border-indigo-500/50 hidden space-y-3"
             >
 
-                <h3 class="text-xs font-bold text-indigo-300 uppercase tracking-wider">
+                <h3
+                    class="text-xs font-bold text-indigo-300 uppercase tracking-wider"
+                >
                     Új Stream Időpont (Admin)
                 </h3>
+
 
                 <input
                     type="text"
@@ -264,12 +340,14 @@
                     class="w-full bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
                 >
 
+
                 <input
                     type="text"
                     id="schedGame"
                     placeholder="Játék / Tartalom címe"
                     class="w-full bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
                 >
+
 
                 <button
                     onclick="addScheduleItem()"
@@ -286,7 +364,9 @@
                 id="scheduleList"
             >
 
-                <div class="glass p-3.5 rounded-xl flex justify-between items-center">
+                <div
+                    class="glass p-3.5 rounded-xl flex justify-between items-center"
+                >
 
                     <div>
 
@@ -300,7 +380,9 @@
 
                     </div>
 
-                    <span class="text-[10px] bg-gray-800 text-gray-300 px-2.5 py-1 rounded-lg">
+                    <span
+                        class="text-[10px] bg-gray-800 text-gray-300 px-2.5 py-1 rounded-lg"
+                    >
                         Közelgő
                     </span>
 
@@ -319,17 +401,25 @@
         >
 
             <h2 class="text-base font-bold text-white">
+
                 <i class="fa-solid fa-store mr-2 text-[#5865F2]"></i>
+
                 PontShop Jutalmak
+
             </h2>
+
 
             <div class="grid grid-cols-2 gap-3">
 
-                <div class="glass p-3 rounded-2xl flex flex-col justify-between">
+                <div
+                    class="glass p-3 rounded-2xl flex flex-col justify-between"
+                >
 
                     <div>
 
-                        <div class="h-24 bg-gray-800/80 rounded-xl mb-2 flex items-center justify-center text-indigo-400">
+                        <div
+                            class="h-24 bg-gray-800/80 rounded-xl mb-2 flex items-center justify-center text-indigo-400"
+                        >
                             <i class="fa-solid fa-gift text-2xl"></i>
                         </div>
 
@@ -343,6 +433,7 @@
 
                     </div>
 
+
                     <button
                         onclick="buyItem(3500)"
                         class="mt-3 w-full bg-[#5865F2] hover:bg-[#4752C4] text-white text-xs font-bold py-2 rounded-xl"
@@ -353,11 +444,15 @@
                 </div>
 
 
-                <div class="glass p-3 rounded-2xl flex flex-col justify-between">
+                <div
+                    class="glass p-3 rounded-2xl flex flex-col justify-between"
+                >
 
                     <div>
 
-                        <div class="h-24 bg-gray-800/80 rounded-xl mb-2 flex items-center justify-center text-green-400">
+                        <div
+                            class="h-24 bg-gray-800/80 rounded-xl mb-2 flex items-center justify-center text-green-400"
+                        >
                             <i class="fa-brands fa-xbox text-2xl"></i>
                         </div>
 
@@ -370,6 +465,7 @@
                         </p>
 
                     </div>
+
 
                     <button
                         onclick="buyItem(4000)"
@@ -395,9 +491,13 @@
             <div class="flex justify-between items-center">
 
                 <h2 class="text-base font-bold text-white">
+
                     <i class="fa-solid fa-gamepad mr-2 text-[#5865F2]"></i>
+
                     Játék Ajánlók
+
                 </h2>
+
 
                 <div id="adminAddBtnContainer"></div>
 
@@ -409,9 +509,12 @@
                 class="glass p-4 rounded-2xl border-indigo-500/50 hidden space-y-3"
             >
 
-                <h3 class="text-xs font-bold text-indigo-300 uppercase tracking-wider">
+                <h3
+                    class="text-xs font-bold text-indigo-300 uppercase tracking-wider"
+                >
                     Új ajánlás hozzáadása (Admin)
                 </h3>
+
 
                 <input
                     type="text"
@@ -420,6 +523,7 @@
                     class="w-full bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
                 >
 
+
                 <input
                     type="text"
                     id="gameImg"
@@ -427,12 +531,14 @@
                     class="w-full bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
                 >
 
+
                 <input
                     type="text"
                     id="gameLink"
                     placeholder="Játék Link"
                     class="w-full bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
                 >
+
 
                 <button
                     onclick="addGameRecommendation()"
@@ -449,7 +555,9 @@
                 id="gameListContainer"
             >
 
-                <div class="glass rounded-2xl overflow-hidden flex flex-col justify-between">
+                <div
+                    class="glass rounded-2xl overflow-hidden flex flex-col justify-between"
+                >
 
                     <div>
 
@@ -457,6 +565,7 @@
                             class="h-44 bg-gray-800 bg-cover bg-center"
                             style="background-image: url('https://images.unsplash.com/photo-1542751371-adc38448a05e?w=500');"
                         ></div>
+
 
                         <div class="p-3">
 
@@ -472,6 +581,7 @@
 
                     </div>
 
+
                     <div class="p-3 pt-0 flex space-x-2">
 
                         <a
@@ -480,16 +590,23 @@
                             rel="noopener noreferrer"
                             class="flex-1 bg-[#5865F2]/80 hover:bg-[#5865F2] text-center text-white text-[11px] font-bold py-1.5 rounded-xl"
                         >
+
                             <i class="fa-solid fa-globe mr-1"></i>
+
                             Link
+
                         </a>
+
 
                         <button
                             onclick="likeGame(this)"
                             class="bg-gray-800 hover:bg-gray-700 px-3 text-red-400 text-[11px] font-bold py-1.5 rounded-xl"
                         >
+
                             <i class="fa-solid fa-heart mr-1"></i>
+
                             <span>12</span>
+
                         </button>
 
                     </div>
@@ -508,7 +625,9 @@
             class="tab-content space-y-4"
         >
 
-            <div class="glass p-5 rounded-2xl text-center space-y-3">
+            <div
+                class="glass p-5 rounded-2xl text-center space-y-3"
+            >
 
                 <div
                     id="profileAvatar"
@@ -516,6 +635,7 @@
                 >
                     <i class="fa-brands fa-discord"></i>
                 </div>
+
 
                 <div>
 
@@ -526,6 +646,7 @@
                         Fiók
                     </h3>
 
+
                     <p
                         class="text-xs text-indigo-400 mt-0.5"
                         id="profileRole"
@@ -534,6 +655,7 @@
                     </p>
 
                 </div>
+
 
                 <button
                     onclick="logout()"
@@ -547,12 +669,20 @@
 
             <!-- CHAT -->
 
-            <div class="glass p-4 rounded-2xl space-y-3">
+            <div
+                class="glass p-4 rounded-2xl space-y-3"
+            >
 
-                <h4 class="text-xs font-bold text-white uppercase tracking-wider">
+                <h4
+                    class="text-xs font-bold text-white uppercase tracking-wider"
+                >
+
                     <i class="fa-solid fa-comments mr-2 text-[#5865F2]"></i>
+
                     Közösségi Chat
+
                 </h4>
+
 
                 <div
                     id="chatMessages"
@@ -561,7 +691,9 @@
 
                     <div class="text-gray-400">
 
-                        <span class="font-bold text-indigo-400">
+                        <span
+                            class="font-bold text-indigo-400"
+                        >
                             norveg34:
                         </span>
 
@@ -570,6 +702,7 @@
                     </div>
 
                 </div>
+
 
                 <div class="flex space-x-2">
 
@@ -580,11 +713,14 @@
                         class="flex-1 bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-[#5865F2]"
                     >
 
+
                     <button
                         onclick="sendChatMessage()"
                         class="bg-[#5865F2] hover:bg-[#4752C4] text-white px-4 py-2 rounded-xl text-xs font-bold"
                     >
+
                         <i class="fa-solid fa-paper-plane"></i>
+
                     </button>
 
                 </div>
@@ -596,9 +732,7 @@
     </main>
 
 
-    <!-- ========================================================= -->
     <!-- NAV -->
-    <!-- ========================================================= -->
 
     <nav
         class="glass fixed bottom-0 left-0 right-0 z-30 px-2 py-2 flex justify-around items-center border-t border-gray-800 pb-safe"
@@ -613,6 +747,7 @@
             <span class="text-[10px] mt-1">Főoldal</span>
         </button>
 
+
         <button
             onclick="switchTab('schedule')"
             class="nav-btn flex flex-col items-center text-gray-400 hover:text-white"
@@ -621,6 +756,7 @@
             <i class="fa-solid fa-calendar text-base"></i>
             <span class="text-[10px] mt-1">Menetrend</span>
         </button>
+
 
         <button
             onclick="switchTab('shop')"
@@ -631,6 +767,7 @@
             <span class="text-[10px] mt-1">Shop</span>
         </button>
 
+
         <button
             onclick="switchTab('recommend')"
             class="nav-btn flex flex-col items-center text-gray-400 hover:text-white"
@@ -639,6 +776,7 @@
             <i class="fa-solid fa-gamepad text-base"></i>
             <span class="text-[10px] mt-1">Ajánló</span>
         </button>
+
 
         <button
             onclick="switchTab('profile')"
@@ -660,56 +798,65 @@
 
 <script>
 
-/* =========================================================
-   BACKEND
-   ========================================================= */
 
-const BACKEND_URL = "http://37.221.208.87:3050";
+// =========================================================
+// BACKEND
+// =========================================================
+
+// FONTOS:
+// Az index.html most ugyanarról a szerverről jön,
+// mint az API.
+//
+// http://37.221.208.87:3050
+//
+// ezért nincs HTTPS -> HTTP probléma.
+
+const BACKEND_URL = window.location.origin;
 
 
-/* =========================================================
-   FELHASZNÁLÓ
-   ========================================================= */
+// =========================================================
+// FELHASZNÁLÓ
+// =========================================================
 
 let currentUser = null;
 
 let userPoints =
-    parseInt(localStorage.getItem("xeon_points")) || 1250;
+    parseInt(
+        localStorage.getItem("xeon_points")
+    ) || 1250;
 
 
-/* =========================================================
-   OLDAL INDULÁSA
-   ========================================================= */
+// =========================================================
+// OLDAL INDULÁSA
+// =========================================================
 
-document.addEventListener("DOMContentLoaded", async () => {
+document.addEventListener(
+    "DOMContentLoaded",
+    async () => {
 
-    if ("serviceWorker" in navigator) {
-
-        navigator.serviceWorker
-            .register("sw.js")
-            .catch(error => {
-                console.error("Service Worker hiba:", error);
-            });
+        await checkDiscordLogin();
 
     }
-
-    await checkDiscordLogin();
-
-});
+);
 
 
-/* =========================================================
-   DISCORD LOGIN
-   ========================================================= */
+// =========================================================
+// DISCORD LOGIN
+// =========================================================
 
 function loginWithDiscord() {
 
     const status =
         document.getElementById("loginStatus");
 
+
     if (status) {
-        status.innerText = "Átirányítás Discordra...";
+
+        status.innerText =
+            "Átirányítás Discordra...";
+
     }
+
 
     window.location.href =
         `${BACKEND_URL}/auth/discord`;
@@ -717,20 +864,27 @@ function loginWithDiscord() {
 }
 
 
-/* =========================================================
-   DISCORD SESSION ELLENŐRZÉSE
-   ========================================================= */
+// =========================================================
+// DISCORD SESSION ELLENŐRZÉSE
+// =========================================================
 
 async function checkDiscordLogin() {
 
     try {
+
+        console.log(
+            "Discord session ellenőrzése..."
+        );
+
 
         const response =
             await fetch(
                 `${BACKEND_URL}/api/me`,
                 {
                     method: "GET",
+
                     credentials: "include",
+
                     headers: {
                         "Accept": "application/json"
                     }
@@ -738,15 +892,17 @@ async function checkDiscordLogin() {
             );
 
 
+        console.log(
+            "Backend HTTP státusz:",
+            response.status
+        );
+
+
         if (!response.ok) {
 
-            currentUser = null;
-
-            localStorage.removeItem("xeon_user");
-
-            checkAuthStatus();
-
-            return;
+            throw new Error(
+                `Backend HTTP hiba: ${response.status}`
+            );
 
         }
 
@@ -755,14 +911,11 @@ async function checkDiscordLogin() {
             await response.json();
 
 
-        /*
-         * A server.js ezt küldi:
-         *
-         * {
-         *   loggedIn: true,
-         *   user: {...}
-         * }
-         */
+        console.log(
+            "Backend login adat:",
+            data
+        );
+
 
         if (
             data.loggedIn === true &&
@@ -796,13 +949,22 @@ async function checkDiscordLogin() {
             );
 
 
+            console.log(
+                "Sikeres Discord login:",
+                currentUser
+            );
+
+
             checkAuthStatus();
 
         } else {
 
             currentUser = null;
 
-            localStorage.removeItem("xeon_user");
+            localStorage.removeItem(
+                "xeon_user"
+            );
+
 
             checkAuthStatus();
 
@@ -815,9 +977,47 @@ async function checkDiscordLogin() {
             error
         );
 
-        currentUser = null;
 
-        localStorage.removeItem("xeon_user");
+        // Megpróbáljuk a korábbi felhasználót
+        // visszaállítani localStorage-ból.
+
+        const savedUser =
+            localStorage.getItem(
+                "xeon_user"
+            );
+
+
+        if (savedUser) {
+
+            try {
+
+                currentUser =
+                    JSON.parse(savedUser);
+
+
+                console.log(
+                    "User visszaállítva:",
+                    currentUser
+                );
+
+
+                checkAuthStatus();
+
+                return;
+
+            } catch (storageError) {
+
+                console.error(
+                    "Mentett user hibás:",
+                    storageError
+                );
+
+            }
+
+        }
+
+
+        currentUser = null;
 
         checkAuthStatus();
 
@@ -826,41 +1026,74 @@ async function checkDiscordLogin() {
 }
 
 
-/* =========================================================
-   AUTH ÁLLAPOT
-   ========================================================= */
+// =========================================================
+// AUTH ÁLLAPOT
+// =========================================================
 
 function checkAuthStatus() {
 
     const loginScreen =
-        document.getElementById("loginScreen");
+        document.getElementById(
+            "loginScreen"
+        );
+
 
     const appScreen =
-        document.getElementById("appScreen");
+        document.getElementById(
+            "appScreen"
+        );
+
+
+    if (!loginScreen || !appScreen) {
+
+        console.error(
+            "Login/App képernyő nem található!"
+        );
+
+        return;
+
+    }
 
 
     if (currentUser) {
 
-        loginScreen.classList.remove("active");
+        loginScreen.classList.remove(
+            "active"
+        );
 
-        appScreen.classList.add("active");
+
+        appScreen.classList.add(
+            "active"
+        );
+
 
         updateUserUI();
 
+
+        console.log(
+            "XeonApp megnyitva:",
+            currentUser.name
+        );
+
     } else {
 
-        loginScreen.classList.add("active");
+        loginScreen.classList.add(
+            "active"
+        );
 
-        appScreen.classList.remove("active");
+
+        appScreen.classList.remove(
+            "active"
+        );
 
     }
 
 }
 
 
-/* =========================================================
-   LOGOUT
-   ========================================================= */
+// =========================================================
+// LOGOUT
+// =========================================================
 
 async function logout() {
 
@@ -870,7 +1103,9 @@ async function logout() {
             `${BACKEND_URL}/auth/logout`,
             {
                 method: "POST",
+
                 credentials: "include",
+
                 headers: {
                     "Accept": "application/json"
                 }
@@ -889,16 +1124,19 @@ async function logout() {
 
     currentUser = null;
 
-    localStorage.removeItem("xeon_user");
+    localStorage.removeItem(
+        "xeon_user"
+    );
+
 
     checkAuthStatus();
 
 }
 
 
-/* =========================================================
-   FELHASZNÁLÓ UI
-   ========================================================= */
+// =========================================================
+// FELHASZNÁLÓ UI
+// =========================================================
 
 function updateUserUI() {
 
@@ -907,41 +1145,59 @@ function updateUserUI() {
     }
 
 
-    document.getElementById("userName").innerText =
-        currentUser.name;
+    const userName =
+        document.getElementById(
+            "userName"
+        );
 
 
-    document.getElementById("profileName").innerText =
-        currentUser.name;
+    const profileName =
+        document.getElementById(
+            "profileName"
+        );
 
 
-    document.getElementById("userPoints").innerText =
-        userPoints.toLocaleString("hu-HU") +
-        " Pont";
+    const userPointsElement =
+        document.getElementById(
+            "userPoints"
+        );
 
 
-    const profileRole =
-        document.getElementById("profileRole");
+    if (userName) {
+
+        userName.innerText =
+            currentUser.name;
+
+    }
 
 
-    const adminPanel =
-        document.getElementById("adminPanel");
+    if (profileName) {
+
+        profileName.innerText =
+            currentUser.name;
+
+    }
 
 
-    const adminSchedulePanel =
-        document.getElementById("adminSchedulePanel");
+    if (userPointsElement) {
+
+        userPointsElement.innerText =
+            userPoints.toLocaleString(
+                "hu-HU"
+            ) +
+            " Pont";
+
+    }
 
 
-    const adminAddBtnContainer =
-        document.getElementById("adminAddBtnContainer");
-
-
-    /*
-     * Avatar
-     */
+    // =====================================================
+    // AVATAR
+    // =====================================================
 
     const profileAvatar =
-        document.getElementById("profileAvatar");
+        document.getElementById(
+            "profileAvatar"
+        );
 
 
     if (
@@ -951,36 +1207,72 @@ function updateUserUI() {
     ) {
 
         profileAvatar.innerHTML = `
+
             <img
                 src="https://cdn.discordapp.com/avatars/${encodeURIComponent(currentUser.id)}/${encodeURIComponent(currentUser.avatar)}.png?size=128"
                 class="w-full h-full object-cover"
                 alt="Discord avatar"
             >
+
         `;
 
     }
 
 
-    /*
-     * ADMIN
-     */
+    // =====================================================
+    // ADMIN
+    // =====================================================
 
-    if (currentUser.role === "admin") {
+    const profileRole =
+        document.getElementById(
+            "profileRole"
+        );
 
-        profileRole.innerText =
-            "Rendszergazda (Admin)";
+
+    const adminPanel =
+        document.getElementById(
+            "adminPanel"
+        );
+
+
+    const adminSchedulePanel =
+        document.getElementById(
+            "adminSchedulePanel"
+        );
+
+
+    const adminAddBtnContainer =
+        document.getElementById(
+            "adminAddBtnContainer"
+        );
+
+
+    if (
+        currentUser.role === "admin"
+    ) {
+
+        if (profileRole) {
+
+            profileRole.innerText =
+                "Rendszergazda (Admin)";
+
+        }
 
 
         if (adminPanel) {
 
-            adminPanel.classList.remove("hidden");
+            adminPanel.classList.remove(
+                "hidden"
+            );
 
         }
 
 
         if (adminSchedulePanel) {
 
-            adminSchedulePanel.classList.remove("hidden");
+            adminSchedulePanel.classList.remove(
+                "hidden"
+            );
 
         }
 
@@ -1004,36 +1296,38 @@ function updateUserUI() {
 
         }
 
-    }
+    } else {
 
+        if (profileRole) {
 
-    /*
-     * NORMÁL FELHASZNÁLÓ
-     */
+            profileRole.innerText =
+                "Discord felhasználó";
 
-    else {
-
-        profileRole.innerText =
-            "Discord felhasználó";
+        }
 
 
         if (adminPanel) {
 
-            adminPanel.classList.add("hidden");
+            adminPanel.classList.add(
+                "hidden"
+            );
 
         }
 
 
         if (adminSchedulePanel) {
 
-            adminSchedulePanel.classList.add("hidden");
+            adminSchedulePanel.classList.add(
+                "hidden"
+            );
 
         }
 
 
         if (adminAddBtnContainer) {
 
-            adminAddBtnContainer.innerHTML = "";
+            adminAddBtnContainer.innerHTML =
+                "";
 
         }
 
@@ -1042,9 +1336,9 @@ function updateUserUI() {
 }
 
 
-/* =========================================================
-   TAB
-   ========================================================= */
+// =========================================================
+// TAB
+// =========================================================
 
 function switchTab(tabId) {
 
@@ -1052,18 +1346,24 @@ function switchTab(tabId) {
         .querySelectorAll(".tab-content")
         .forEach(element => {
 
-            element.classList.remove("active");
+            element.classList.remove(
+                "active"
+            );
 
         });
 
 
     const target =
-        document.getElementById("tab-" + tabId);
+        document.getElementById(
+            "tab-" + tabId
+        );
 
 
     if (target) {
 
-        target.classList.add("active");
+        target.classList.add(
+            "active"
+        );
 
     }
 
@@ -1082,8 +1382,9 @@ function switchTab(tabId) {
 
 
             if (
-                button.getAttribute("data-target") ===
-                tabId
+                button.getAttribute(
+                    "data-target"
+                ) === tabId
             ) {
 
                 button.classList.remove(
@@ -1099,18 +1400,22 @@ function switchTab(tabId) {
         });
 
 
-    window.scrollTo(0, 0);
+    window.scrollTo(
+        0,
+        0
+    );
 
 }
 
 
-/* =========================================================
-   NAPI BÓNUSZ
-   ========================================================= */
+// =========================================================
+// NAPI BÓNUSZ
+// =========================================================
 
 function claimDailyBonus() {
 
     userPoints += 250;
+
 
     localStorage.setItem(
         "xeon_points",
@@ -1118,11 +1423,21 @@ function claimDailyBonus() {
     );
 
 
-    document.getElementById(
-        "userPoints"
-    ).innerText =
-        userPoints.toLocaleString("hu-HU") +
-        " Pont";
+    const points =
+        document.getElementById(
+            "userPoints"
+        );
+
+
+    if (points) {
+
+        points.innerText =
+            userPoints.toLocaleString(
+                "hu-HU"
+            ) +
+            " Pont";
+
+    }
 
 
     alert(
@@ -1132,53 +1447,76 @@ function claimDailyBonus() {
 }
 
 
-/* =========================================================
-   ADMIN PANEL
-   ========================================================= */
+// =========================================================
+// ADMIN PANEL
+// =========================================================
 
 function toggleAdminPanel() {
 
-    if (!currentUser || currentUser.role !== "admin") {
+    if (
+        !currentUser ||
+        currentUser.role !== "admin"
+    ) {
+
         return;
+
     }
 
 
     const panel =
-        document.getElementById("adminPanel");
+        document.getElementById(
+            "adminPanel"
+        );
 
 
     if (panel) {
 
-        panel.classList.toggle("hidden");
+        panel.classList.toggle(
+            "hidden"
+        );
 
     }
 
 }
 
 
-/* =========================================================
-   MENETREND
-   ========================================================= */
+// =========================================================
+// MENETREND
+// =========================================================
 
 function addScheduleItem() {
 
-    if (!currentUser || currentUser.role !== "admin") {
-        alert("Nincs admin jogosultságod.");
+    if (
+        !currentUser ||
+        currentUser.role !== "admin"
+    ) {
+
+        alert(
+            "Nincs admin jogosultságod."
+        );
+
         return;
+
     }
 
 
     const day =
-        document.getElementById("schedDay").value.trim();
+        document.getElementById(
+            "schedDay"
+        ).value.trim();
 
 
     const game =
-        document.getElementById("schedGame").value.trim();
+        document.getElementById(
+            "schedGame"
+        ).value.trim();
 
 
     if (!day || !game) {
 
-        alert("Töltsd ki mindkét mezőt!");
+        alert(
+            "Töltsd ki mindkét mezőt!"
+        );
 
         return;
 
@@ -1186,11 +1524,15 @@ function addScheduleItem() {
 
 
     const list =
-        document.getElementById("scheduleList");
+        document.getElementById(
+            "scheduleList"
+        );
 
 
     const item =
-        document.createElement("div");
+        document.createElement(
+            "div"
+        );
 
 
     item.className =
@@ -1198,88 +1540,140 @@ function addScheduleItem() {
 
 
     const content =
-        document.createElement("div");
+        document.createElement(
+            "div"
+        );
 
 
     const dayElement =
-        document.createElement("div");
+        document.createElement(
+            "div"
+        );
+
 
     dayElement.className =
         "text-xs text-indigo-400 font-bold";
+
 
     dayElement.textContent =
         day;
 
 
     const gameElement =
-        document.createElement("div");
+        document.createElement(
+            "div"
+        );
+
 
     gameElement.className =
         "text-sm font-semibold text-white mt-0.5";
+
 
     gameElement.textContent =
         game;
 
 
-    content.appendChild(dayElement);
-    content.appendChild(gameElement);
+    content.appendChild(
+        dayElement
+    );
+
+
+    content.appendChild(
+        gameElement
+    );
 
 
     const badge =
-        document.createElement("span");
+        document.createElement(
+            "span"
+        );
+
 
     badge.className =
         "text-[10px] bg-[#5865F2] text-white px-2.5 py-1 rounded-lg";
+
 
     badge.textContent =
         "Admin";
 
 
-    item.appendChild(content);
-    item.appendChild(badge);
+    item.appendChild(
+        content
+    );
 
 
-    list.prepend(item);
+    item.appendChild(
+        badge
+    );
 
 
-    document.getElementById("schedDay").value = "";
-    document.getElementById("schedGame").value = "";
+    list.prepend(
+        item
+    );
 
 
-    alert("Menetrend frissítve!");
+    document.getElementById(
+        "schedDay"
+    ).value = "";
+
+
+    document.getElementById(
+        "schedGame"
+    ).value = "";
+
+
+    alert(
+        "Menetrend frissítve!"
+    );
 
 }
 
 
-/* =========================================================
-   JÁTÉK AJÁNLÁS
-   ========================================================= */
+// =========================================================
+// JÁTÉK AJÁNLÁS
+// =========================================================
 
 function addGameRecommendation() {
 
-    if (!currentUser || currentUser.role !== "admin") {
-        alert("Nincs admin jogosultságod.");
+    if (
+        !currentUser ||
+        currentUser.role !== "admin"
+    ) {
+
+        alert(
+            "Nincs admin jogosultságod."
+        );
+
         return;
+
     }
 
 
     const title =
-        document.getElementById("gameTitle").value.trim();
+        document.getElementById(
+            "gameTitle"
+        ).value.trim();
 
 
     const img =
-        document.getElementById("gameImg").value.trim() ||
+        document.getElementById(
+            "gameImg"
+        ).value.trim() ||
         "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=500";
 
 
     const link =
-        document.getElementById("gameLink").value.trim() ||
+        document.getElementById(
+            "gameLink"
+        ).value.trim() ||
         "https://www.twitch.tv/xeonskorpofficial";
 
 
     if (!title) {
 
-        alert("Add meg a játék címét!");
+        alert(
+            "Add meg a játék címét!"
+        );
 
         return;
 
@@ -1287,11 +1681,15 @@ function addGameRecommendation() {
 
 
     const container =
-        document.getElementById("gameListContainer");
+        document.getElementById(
+            "gameListContainer"
+        );
 
 
     const card =
-        document.createElement("div");
+        document.createElement(
+            "div"
+        );
 
 
     card.className =
@@ -1329,29 +1727,46 @@ function addGameRecommendation() {
                 rel="noopener noreferrer"
                 class="flex-1 bg-[#5865F2]/80 hover:bg-[#5865F2] text-center text-white text-[11px] font-bold py-1.5 rounded-xl"
             >
+
                 <i class="fa-solid fa-globe mr-1"></i>
+
                 Link
+
             </a>
 
             <button
                 onclick="likeGame(this)"
                 class="bg-gray-800 hover:bg-gray-700 px-3 text-red-400 text-[11px] font-bold py-1.5 rounded-xl"
             >
+
                 <i class="fa-solid fa-heart mr-1"></i>
+
                 <span>0</span>
+
             </button>
 
         </div>
-
     `;
 
 
-    container.prepend(card);
+    container.prepend(
+        card
+    );
 
 
-    document.getElementById("gameTitle").value = "";
-    document.getElementById("gameImg").value = "";
-    document.getElementById("gameLink").value = "";
+    document.getElementById(
+        "gameTitle"
+    ).value = "";
+
+
+    document.getElementById(
+        "gameImg"
+    ).value = "";
+
+
+    document.getElementById(
+        "gameLink"
+    ).value = "";
 
 
     toggleAdminPanel();
@@ -1359,30 +1774,47 @@ function addGameRecommendation() {
 }
 
 
-/* =========================================================
-   HTML ESCAPE
-   ========================================================= */
+// =========================================================
+// HTML ESCAPE
+// =========================================================
 
 function escapeHtml(value) {
 
     return String(value)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
+        .replaceAll(
+            "&",
+            "&amp;"
+        )
+        .replaceAll(
+            "<",
+            "&lt;"
+        )
+        .replaceAll(
+            ">",
+            "&gt;"
+        )
+        .replaceAll(
+            '"',
+            "&quot;"
+        )
+        .replaceAll(
+            "'",
+            "&#039;"
+        );
 
 }
 
 
-/* =========================================================
-   LIKE
-   ========================================================= */
+// =========================================================
+// LIKE
+// =========================================================
 
 function likeGame(button) {
 
     const span =
-        button.querySelector("span");
+        button.querySelector(
+            "span"
+        );
 
 
     if (!span) {
@@ -1391,14 +1823,16 @@ function likeGame(button) {
 
 
     span.innerText =
-        parseInt(span.innerText || "0") + 1;
+        parseInt(
+            span.innerText || "0"
+        ) + 1;
 
 }
 
 
-/* =========================================================
-   SHOP
-   ========================================================= */
+// =========================================================
+// SHOP
+// =========================================================
 
 function buyItem(cost) {
 
@@ -1413,11 +1847,21 @@ function buyItem(cost) {
         );
 
 
-        document.getElementById(
-            "userPoints"
-        ).innerText =
-            userPoints.toLocaleString("hu-HU") +
-            " Pont";
+        const points =
+            document.getElementById(
+                "userPoints"
+            );
+
+
+        if (points) {
+
+            points.innerText =
+                userPoints.toLocaleString(
+                    "hu-HU"
+                ) +
+                " Pont";
+
+        }
 
 
         alert(
@@ -1426,21 +1870,25 @@ function buyItem(cost) {
 
     } else {
 
-        alert("Nincs elég pontod!");
+        alert(
+            "Nincs elég pontod!"
+        );
 
     }
 
 }
 
 
-/* =========================================================
-   CHAT
-   ========================================================= */
+// =========================================================
+// CHAT
+// =========================================================
 
 function sendChatMessage() {
 
     const input =
-        document.getElementById("chatInput");
+        document.getElementById(
+            "chatInput"
+        );
 
 
     const text =
@@ -1454,7 +1902,9 @@ function sendChatMessage() {
 
     if (!currentUser) {
 
-        alert("Először jelentkezz be!");
+        alert(
+            "Először jelentkezz be!"
+        );
 
         return;
 
@@ -1462,11 +1912,15 @@ function sendChatMessage() {
 
 
     const chatContainer =
-        document.getElementById("chatMessages");
+        document.getElementById(
+            "chatMessages"
+        );
 
 
     const msgDiv =
-        document.createElement("div");
+        document.createElement(
+            "div"
+        );
 
 
     msgDiv.className =
@@ -1474,7 +1928,9 @@ function sendChatMessage() {
 
 
     const username =
-        document.createElement("span");
+        document.createElement(
+            "span"
+        );
 
 
     username.className =
@@ -1485,15 +1941,21 @@ function sendChatMessage() {
         currentUser.name + ":";
 
 
-    msgDiv.appendChild(username);
-
-
     msgDiv.appendChild(
-        document.createTextNode(" " + text)
+        username
     );
 
 
-    chatContainer.appendChild(msgDiv);
+    msgDiv.appendChild(
+        document.createTextNode(
+            " " + text
+        )
+    );
+
+
+    chatContainer.appendChild(
+        msgDiv
+    );
 
 
     chatContainer.scrollTop =
@@ -1505,13 +1967,15 @@ function sendChatMessage() {
 }
 
 
-/* =========================================================
-   PUSH
-   ========================================================= */
+// =========================================================
+// PUSH
+// =========================================================
 
 function requestPushPermission() {
 
-    if (!("Notification" in window)) {
+    if (
+        !("Notification" in window)
+    ) {
 
         alert(
             "A böngésződ nem támogatja a push értesítéseket."
@@ -1526,7 +1990,9 @@ function requestPushPermission() {
         .requestPermission()
         .then(permission => {
 
-            if (permission === "granted") {
+            if (
+                permission === "granted"
+            ) {
 
                 alert(
                     "🔔 Push értesítések engedélyezve!"
