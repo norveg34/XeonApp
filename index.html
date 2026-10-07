@@ -744,7 +744,10 @@ function showAppScreen() {
     }
 
     loginScreen.classList.remove("active");
+    loginScreen.style.display = "none";
+
     appScreen.classList.add("active");
+    appScreen.style.display = "block";
 
     updateUserUI();
 }
@@ -758,7 +761,10 @@ function showLoginScreen() {
     }
 
     loginScreen.classList.add("active");
+    loginScreen.style.display = "flex";
+
     appScreen.classList.remove("active");
+    appScreen.style.display = "none";
 
     const button = document.getElementById("discordLoginButton");
     const status = document.getElementById("loginStatus");
