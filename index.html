@@ -1,24 +1,44 @@
+```html
 <script>
 
-const BACKEND_URL = window.location.origin;
+"use strict";
+
+
+// =========================================================
+// BACKEND
+// =========================================================
+
+const BACKEND_URL =
+    window.location.origin;
+
+
+// =========================================================
+// ÁLLAPOT
+// =========================================================
 
 let currentUser = null;
 
 let userPoints =
-    parseInt(localStorage.getItem("xeon_points"), 10) || 1250;
+    parseInt(
+        localStorage.getItem("xeon_points"),
+        10
+    ) || 1250;
 
 
 // =========================================================
 // OLDAL INDULÁSA
 // =========================================================
 
-document.addEventListener("DOMContentLoaded", async () => {
+document.addEventListener(
+    "DOMContentLoaded",
+    async () => {
 
-    updatePointsUI();
+        updatePointsUI();
 
-    await checkDiscordLogin();
+        await checkDiscordLogin();
 
-});
+    }
+);
 
 
 // =========================================================
@@ -28,10 +48,14 @@ document.addEventListener("DOMContentLoaded", async () => {
 function loginWithDiscord() {
 
     const button =
-        document.getElementById("discordLoginButton");
+        document.getElementById(
+            "discordLoginButton"
+        );
 
     const status =
-        document.getElementById("loginStatus");
+        document.getElementById(
+            "loginStatus"
+        );
 
 
     if (button) {
@@ -49,22 +73,20 @@ function loginWithDiscord() {
     if (status) {
 
         status.innerText =
-            "Átirányítás a Discord bejelentkezéshez...";
+            "Átirányítás a Discordhoz...";
 
     }
 
 
     /*
-     * FONTOS:
+     * OAuth loginhoz NEM fetch kell.
      *
-     * Nem használunk fetch() loginhoz.
-     * A böngészőt közvetlenül az OAuth endpoint-ra
-     * irányítjuk.
+     * A böngészőt közvetlenül az OAuth
+     * endpoint-ra irányítjuk.
      */
 
-    window.location.assign(
-        `${BACKEND_URL}/auth/discord`
-    );
+    window.location.href =
+        `${BACKEND_URL}/auth/discord`;
 
 }
 
@@ -76,37 +98,57 @@ function loginWithDiscord() {
 async function checkDiscordLogin() {
 
     const loginScreen =
-        document.getElementById("loginScreen");
+        document.getElementById(
+            "loginScreen"
+        );
 
     const appScreen =
-        document.getElementById("appScreen");
+        document.getElementById(
+            "appScreen"
+        );
 
 
     if (!loginScreen || !appScreen) {
+
+        console.error(
+            "Login vagy App képernyő nem található."
+        );
+
         return;
+
     }
 
 
     /*
-     * Először login képernyő.
+     * Kezdetben login képernyő.
      */
 
-    loginScreen.classList.add("active");
+    loginScreen.classList.add(
+        "active"
+    );
 
-    appScreen.classList.remove("active");
+    appScreen.classList.remove(
+        "active"
+    );
 
 
     /*
-     * OAuth callback után lehet egy kis késés,
-     * ezért maximum 5 alkalommal próbáljuk.
+     * OAuth callback után lehet néhány
+     * pillanatnyi késés.
+     *
+     * Ezért 8 próbálkozást végzünk.
      */
 
-    for (let attempt = 1; attempt <= 5; attempt++) {
+    for (
+        let attempt = 1;
+        attempt <= 8;
+        attempt++
+    ) {
 
         try {
 
             console.log(
-                `Discord session ellenőrzés: ${attempt}/5`
+                `Discord session ellenőrzés ${attempt}/8`
             );
 
 
@@ -121,22 +163,25 @@ async function checkDiscordLogin() {
                         cache: "no-store",
 
                         headers: {
-                            "Accept": "application/json"
+                            "Accept":
+                                "application/json"
                         }
                     }
                 );
 
 
             console.log(
-                "API /api/me státusz:",
+                "/api/me HTTP:",
                 response.status
             );
 
 
             /*
-             * Ha nincs login:
-             * 401 / 403 esetén normálisan visszatérünk
-             * a login képernyőre.
+             * Ha a backend egyértelműen azt mondja,
+             * hogy nincs bejelentkezve, akkor várunk
+             * még egy rövid időt OAuth callback után.
+             *
+             * Nem lépünk ki azonnal.
              */
 
             if (
@@ -144,7 +189,29 @@ async function checkDiscordLogin() {
                 response.status === 403
             ) {
 
+                console.log(
+                    "A backend szerint nincs aktív session."
+                );
+
+
+                if (
+                    attempt < 8
+                ) {
+
+                    await sleep(
+                        500
+                    );
+
+                    continue;
+
+                }
+
+
                 currentUser = null;
+
+                localStorage.removeItem(
+                    "xeon_user"
+                );
 
                 showLoginScreen();
 
@@ -153,10 +220,14 @@ async function checkDiscordLogin() {
             }
 
 
+            /*
+             * Egyéb HTTP hiba.
+             */
+
             if (!response.ok) {
 
                 throw new Error(
-                    `/api/me HTTP ${response.status}`
+                    `API HTTP ${response.status}`
                 );
 
             }
@@ -167,34 +238,52 @@ async function checkDiscordLogin() {
 
 
             console.log(
-                "Discord session:",
+                "/api/me válasz:",
                 data
             );
 
 
             /*
-             * Több lehetséges backend választ is elfogadunk.
+             * Backend által küldött login állapot.
+             *
+             * Több formátumot is támogatunk.
              */
 
             const loggedIn =
                 data.loggedIn === true ||
                 data.authenticated === true ||
-                data.logged_in === true;
+                data.logged_in === true ||
+                data.isLoggedIn === true;
 
+
+            /*
+             * User több lehetséges mezőből.
+             */
 
             const user =
                 data.user ||
                 data.discordUser ||
                 data.discord ||
+                data.account ||
                 null;
 
 
-            if (loggedIn && user) {
+            /*
+             * SIKERES LOGIN
+             */
+
+            if (
+                loggedIn &&
+                user &&
+                user.id
+            ) {
 
                 currentUser = {
 
                     id:
-                        user.id,
+                        String(
+                            user.id
+                        ),
 
                     name:
                         user.global_name ||
@@ -220,21 +309,26 @@ async function checkDiscordLogin() {
 
 
                 /*
-                 * Csak akkor mentjük el, ha ténylegesen
-                 * a backend igazolta a bejelentkezést.
+                 * A hitelesített usert elmentjük.
                  */
 
                 localStorage.setItem(
                     "xeon_user",
-                    JSON.stringify(currentUser)
+                    JSON.stringify(
+                        currentUser
+                    )
                 );
 
 
                 console.log(
-                    "SIKERES DISCORD LOGIN:",
+                    "DISCORD LOGIN SIKERES:",
                     currentUser
                 );
 
+
+                /*
+                 * Login képernyő elrejtése.
+                 */
 
                 showAppScreen();
 
@@ -245,19 +339,18 @@ async function checkDiscordLogin() {
 
 
             /*
-             * Ha a backend 200-at ad, de még nincs
-             * user adat, várunk és újrapróbáljuk.
+             * Ha nincs user, még próbálkozunk.
              */
 
             console.log(
-                "Backend válaszolt, de nincs aktív Discord session."
+                "Nincs még érvényes Discord session."
             );
 
 
         } catch (error) {
 
             console.error(
-                "Discord session hiba:",
+                "Discord session ellenőrzési hiba:",
                 error
             );
 
@@ -265,12 +358,16 @@ async function checkDiscordLogin() {
 
 
         /*
-         * Következő próbálkozás előtt várunk.
+         * Következő próbálkozás.
          */
 
-        if (attempt < 5) {
+        if (
+            attempt < 8
+        ) {
 
-            await sleep(700);
+            await sleep(
+                700
+            );
 
         }
 
@@ -278,13 +375,14 @@ async function checkDiscordLogin() {
 
 
     /*
-     * Ha egyik próbálkozás sem sikerült,
-     * nincs aktív session.
+     * Ha az összes próbálkozás sikertelen.
      */
 
     currentUser = null;
 
-    localStorage.removeItem("xeon_user");
+    localStorage.removeItem(
+        "xeon_user"
+    );
 
     showLoginScreen();
 
@@ -298,22 +396,30 @@ async function checkDiscordLogin() {
 function showAppScreen() {
 
     const loginScreen =
-        document.getElementById("loginScreen");
+        document.getElementById(
+            "loginScreen"
+        );
 
     const appScreen =
-        document.getElementById("appScreen");
+        document.getElementById(
+            "appScreen"
+        );
 
 
     if (loginScreen) {
 
-        loginScreen.classList.remove("active");
+        loginScreen.classList.remove(
+            "active"
+        );
 
     }
 
 
     if (appScreen) {
 
-        appScreen.classList.add("active");
+        appScreen.classList.add(
+            "active"
+        );
 
     }
 
@@ -330,38 +436,50 @@ function showAppScreen() {
 
 
 // =========================================================
-// LOGIN MEGJELENÍTÉSE
+// LOGIN KÉPERNYŐ
 // =========================================================
 
 function showLoginScreen() {
 
     const loginScreen =
-        document.getElementById("loginScreen");
+        document.getElementById(
+            "loginScreen"
+        );
 
     const appScreen =
-        document.getElementById("appScreen");
+        document.getElementById(
+            "appScreen"
+        );
 
 
     if (loginScreen) {
 
-        loginScreen.classList.add("active");
+        loginScreen.classList.add(
+            "active"
+        );
 
     }
 
 
     if (appScreen) {
 
-        appScreen.classList.remove("active");
+        appScreen.classList.remove(
+            "active"
+        );
 
     }
 
 
     const button =
-        document.getElementById("discordLoginButton");
+        document.getElementById(
+            "discordLoginButton"
+        );
 
 
     const status =
-        document.getElementById("loginStatus");
+        document.getElementById(
+            "loginStatus"
+        );
 
 
     if (button) {
@@ -404,7 +522,8 @@ async function logout() {
                 cache: "no-store",
 
                 headers: {
-                    "Accept": "application/json"
+                    "Accept":
+                        "application/json"
                 }
             }
         );
@@ -421,7 +540,11 @@ async function logout() {
 
     currentUser = null;
 
-    localStorage.removeItem("xeon_user");
+
+    localStorage.removeItem(
+        "xeon_user"
+    );
+
 
     showLoginScreen();
 
@@ -435,21 +558,33 @@ async function logout() {
 function updateUserUI() {
 
     if (!currentUser) {
+
         return;
+
     }
 
 
     const userName =
-        document.getElementById("userName");
+        document.getElementById(
+            "userName"
+        );
 
 
     const profileName =
-        document.getElementById("profileName");
+        document.getElementById(
+            "profileName"
+        );
 
 
     const profileRole =
-        document.getElementById("profileRole");
+        document.getElementById(
+            "profileRole"
+        );
 
+
+    /*
+     * NÉV
+     */
 
     if (userName) {
 
@@ -467,9 +602,15 @@ function updateUserUI() {
     }
 
 
+    /*
+     * ROLE
+     */
+
     if (profileRole) {
 
-        if (currentUser.role === "admin") {
+        if (
+            currentUser.role === "admin"
+        ) {
 
             profileRole.textContent =
                 "Rendszergazda (Admin)";
@@ -484,42 +625,97 @@ function updateUserUI() {
     }
 
 
+    /*
+     * PONTOK
+     */
+
     updatePointsUI();
 
 
-    // =====================================================
-    // AVATAR
-    // =====================================================
+    /*
+     * AVATAR
+     */
+
+    updateAvatar();
+
+
+    /*
+     * ADMIN UI
+     */
+
+    updateAdminUI();
+
+}
+
+
+// =========================================================
+// AVATAR
+// =========================================================
+
+function updateAvatar() {
 
     const profileAvatar =
-        document.getElementById("profileAvatar");
+        document.getElementById(
+            "profileAvatar"
+        );
 
+
+    if (!profileAvatar) {
+
+        return;
+
+    }
+
+
+    /*
+     * Nincs Discord avatar.
+     */
 
     if (
-        profileAvatar &&
-        currentUser.id &&
-        currentUser.avatar
+        !currentUser ||
+        !currentUser.id ||
+        !currentUser.avatar
     ) {
 
-        profileAvatar.innerHTML = "";
+        profileAvatar.innerHTML =
+            `<i class="fa-brands fa-discord"></i>`;
 
-        const img =
-            document.createElement("img");
+        return;
 
-
-        img.src =
-            `https://cdn.discordapp.com/avatars/${encodeURIComponent(currentUser.id)}/${encodeURIComponent(currentUser.avatar)}.png?size=128`;
+    }
 
 
-        img.alt =
-            "Discord avatar";
+    const avatarURL =
+        `https://cdn.discordapp.com/avatars/${encodeURIComponent(
+            currentUser.id
+        )}/${encodeURIComponent(
+            currentUser.avatar
+        )}.png?size=128`;
 
 
-        img.className =
-            "w-full h-full object-cover";
+    profileAvatar.innerHTML = "";
 
 
-        img.onerror = () => {
+    const img =
+        document.createElement(
+            "img"
+        );
+
+
+    img.src =
+        avatarURL;
+
+
+    img.alt =
+        "Discord avatar";
+
+
+    img.className =
+        "w-full h-full object-cover";
+
+
+    img.onerror =
+        () => {
 
             profileAvatar.innerHTML =
                 `<i class="fa-brands fa-discord"></i>`;
@@ -527,39 +723,58 @@ function updateUserUI() {
         };
 
 
-        profileAvatar.appendChild(img);
+    profileAvatar.appendChild(
+        img
+    );
 
-    }
+}
 
 
-    // =====================================================
-    // ADMIN
-    // =====================================================
+// =========================================================
+// ADMIN UI
+// =========================================================
+
+function updateAdminUI() {
 
     const adminPanel =
-        document.getElementById("adminPanel");
+        document.getElementById(
+            "adminPanel"
+        );
 
 
     const adminSchedulePanel =
-        document.getElementById("adminSchedulePanel");
+        document.getElementById(
+            "adminSchedulePanel"
+        );
 
 
     const adminAddBtnContainer =
-        document.getElementById("adminAddBtnContainer");
+        document.getElementById(
+            "adminAddBtnContainer"
+        );
 
 
-    if (currentUser.role === "admin") {
+    const isAdmin =
+        currentUser &&
+        currentUser.role === "admin";
+
+
+    if (isAdmin) {
 
         if (adminPanel) {
 
-            adminPanel.classList.remove("hidden");
+            adminPanel.classList.remove(
+                "hidden"
+            );
 
         }
 
 
         if (adminSchedulePanel) {
 
-            adminSchedulePanel.classList.remove("hidden");
+            adminSchedulePanel.classList.remove(
+                "hidden"
+            );
 
         }
 
@@ -587,21 +802,26 @@ function updateUserUI() {
 
         if (adminPanel) {
 
-            adminPanel.classList.add("hidden");
+            adminPanel.classList.add(
+                "hidden"
+            );
 
         }
 
 
         if (adminSchedulePanel) {
 
-            adminSchedulePanel.classList.add("hidden");
+            adminSchedulePanel.classList.add(
+                "hidden"
+            );
 
         }
 
 
         if (adminAddBtnContainer) {
 
-            adminAddBtnContainer.innerHTML = "";
+            adminAddBtnContainer.innerHTML =
+                "";
 
         }
 
@@ -611,22 +831,29 @@ function updateUserUI() {
 
 
 // =========================================================
-// PONTOK
+// PONTOK UI
 // =========================================================
 
 function updatePointsUI() {
 
     const points =
-        document.getElementById("userPoints");
+        document.getElementById(
+            "userPoints"
+        );
 
 
-    if (points) {
+    if (!points) {
 
-        points.textContent =
-            userPoints.toLocaleString("hu-HU") +
-            " Pont";
+        return;
 
     }
+
+
+    points.textContent =
+        userPoints.toLocaleString(
+            "hu-HU"
+        ) +
+        " Pont";
 
 }
 
@@ -638,10 +865,14 @@ function updatePointsUI() {
 function switchTab(tabId) {
 
     document
-        .querySelectorAll(".tab-content")
+        .querySelectorAll(
+            ".tab-content"
+        )
         .forEach(element => {
 
-            element.classList.remove("active");
+            element.classList.remove(
+                "active"
+            );
 
         });
 
@@ -654,13 +885,17 @@ function switchTab(tabId) {
 
     if (target) {
 
-        target.classList.add("active");
+        target.classList.add(
+            "active"
+        );
 
     }
 
 
     document
-        .querySelectorAll(".nav-btn")
+        .querySelectorAll(
+            ".nav-btn"
+        )
         .forEach(button => {
 
             button.classList.remove(
@@ -673,7 +908,8 @@ function switchTab(tabId) {
 
 
             if (
-                button.dataset.target === tabId
+                button.dataset.target ===
+                tabId
             ) {
 
                 button.classList.remove(
@@ -689,7 +925,10 @@ function switchTab(tabId) {
         });
 
 
-    window.scrollTo(0, 0);
+    window.scrollTo(
+        0,
+        0
+    );
 
 }
 
@@ -702,12 +941,15 @@ function claimDailyBonus() {
 
     userPoints += 250;
 
+
     localStorage.setItem(
         "xeon_points",
         userPoints
     );
 
+
     updatePointsUI();
+
 
     alert(
         "🎉 Sikeresen begyűjtötted a napi 250 bónusz pontot!"
@@ -733,12 +975,16 @@ function toggleAdminPanel() {
 
 
     const panel =
-        document.getElementById("adminPanel");
+        document.getElementById(
+            "adminPanel"
+        );
 
 
     if (panel) {
 
-        panel.classList.toggle("hidden");
+        panel.classList.toggle(
+            "hidden"
+        );
 
     }
 
@@ -765,19 +1011,40 @@ function addScheduleItem() {
     }
 
 
+    const dayInput =
+        document.getElementById(
+            "schedDay"
+        );
+
+
+    const gameInput =
+        document.getElementById(
+            "schedGame"
+        );
+
+
+    if (
+        !dayInput ||
+        !gameInput
+    ) {
+
+        return;
+
+    }
+
+
     const day =
-        document.getElementById("schedDay")
-        .value
-        .trim();
+        dayInput.value.trim();
 
 
     const game =
-        document.getElementById("schedGame")
-        .value
-        .trim();
+        gameInput.value.trim();
 
 
-    if (!day || !game) {
+    if (
+        !day ||
+        !game
+    ) {
 
         alert(
             "Töltsd ki mindkét mezőt!"
@@ -789,11 +1056,22 @@ function addScheduleItem() {
 
 
     const list =
-        document.getElementById("scheduleList");
+        document.getElementById(
+            "scheduleList"
+        );
+
+
+    if (!list) {
+
+        return;
+
+    }
 
 
     const item =
-        document.createElement("div");
+        document.createElement(
+            "div"
+        );
 
 
     item.className =
@@ -801,11 +1079,15 @@ function addScheduleItem() {
 
 
     const content =
-        document.createElement("div");
+        document.createElement(
+            "div"
+        );
 
 
     const dayElement =
-        document.createElement("div");
+        document.createElement(
+            "div"
+        );
 
 
     dayElement.className =
@@ -817,7 +1099,9 @@ function addScheduleItem() {
 
 
     const gameElement =
-        document.createElement("div");
+        document.createElement(
+            "div"
+        );
 
 
     gameElement.className =
@@ -828,13 +1112,20 @@ function addScheduleItem() {
         game;
 
 
-    content.appendChild(dayElement);
+    content.appendChild(
+        dayElement
+    );
 
-    content.appendChild(gameElement);
+
+    content.appendChild(
+        gameElement
+    );
 
 
     const badge =
-        document.createElement("span");
+        document.createElement(
+            "span"
+        );
 
 
     badge.className =
@@ -845,22 +1136,24 @@ function addScheduleItem() {
         "Admin";
 
 
-    item.appendChild(content);
-
-    item.appendChild(badge);
-
-
-    list.prepend(item);
+    item.appendChild(
+        content
+    );
 
 
-    document.getElementById(
-        "schedDay"
-    ).value = "";
+    item.appendChild(
+        badge
+    );
 
 
-    document.getElementById(
-        "schedGame"
-    ).value = "";
+    list.prepend(
+        item
+    );
+
+
+    dayInput.value = "";
+
+    gameInput.value = "";
 
 
     alert(
@@ -890,23 +1183,53 @@ function addGameRecommendation() {
     }
 
 
+    const titleInput =
+        document.getElementById(
+            "gameTitle"
+        );
+
+
+    const imgInput =
+        document.getElementById(
+            "gameImg"
+        );
+
+
+    const linkInput =
+        document.getElementById(
+            "gameLink"
+        );
+
+
+    const container =
+        document.getElementById(
+            "gameListContainer"
+        );
+
+
+    if (
+        !titleInput ||
+        !imgInput ||
+        !linkInput ||
+        !container
+    ) {
+
+        return;
+
+    }
+
+
     const title =
-        document.getElementById("gameTitle")
-        .value
-        .trim();
+        titleInput.value.trim();
 
 
     const img =
-        document.getElementById("gameImg")
-        .value
-        .trim() ||
+        imgInput.value.trim() ||
         "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=500";
 
 
     const link =
-        document.getElementById("gameLink")
-        .value
-        .trim() ||
+        linkInput.value.trim() ||
         "https://www.twitch.tv/xeonskorpofficial";
 
 
@@ -921,14 +1244,10 @@ function addGameRecommendation() {
     }
 
 
-    const container =
-        document.getElementById(
-            "gameListContainer"
-        );
-
-
     const card =
-        document.createElement("div");
+        document.createElement(
+            "div"
+        );
 
 
     card.className =
@@ -936,11 +1255,15 @@ function addGameRecommendation() {
 
 
     const top =
-        document.createElement("div");
+        document.createElement(
+            "div"
+        );
 
 
     const image =
-        document.createElement("div");
+        document.createElement(
+            "div"
+        );
 
 
     image.className =
@@ -948,11 +1271,13 @@ function addGameRecommendation() {
 
 
     image.style.backgroundImage =
-        `url("${img.replaceAll('"', '\\"')}")`;
+        `url("${escapeCssUrl(img)}")`;
 
 
     const content =
-        document.createElement("div");
+        document.createElement(
+            "div"
+        );
 
 
     content.className =
@@ -960,7 +1285,9 @@ function addGameRecommendation() {
 
 
     const titleElement =
-        document.createElement("h3");
+        document.createElement(
+            "h3"
+        );
 
 
     titleElement.className =
@@ -972,7 +1299,9 @@ function addGameRecommendation() {
 
 
     const author =
-        document.createElement("p");
+        document.createElement(
+            "p"
+        );
 
 
     author.className =
@@ -980,21 +1309,34 @@ function addGameRecommendation() {
 
 
     author.textContent =
-        "Ajánlja: " + currentUser.name;
+        "Ajánlja: " +
+        currentUser.name;
 
 
-    content.appendChild(titleElement);
+    content.appendChild(
+        titleElement
+    );
 
-    content.appendChild(author);
+
+    content.appendChild(
+        author
+    );
 
 
-    top.appendChild(image);
+    top.appendChild(
+        image
+    );
 
-    top.appendChild(content);
+
+    top.appendChild(
+        content
+    );
 
 
     const bottom =
-        document.createElement("div");
+        document.createElement(
+            "div"
+        );
 
 
     bottom.className =
@@ -1002,12 +1344,18 @@ function addGameRecommendation() {
 
 
     const linkButton =
-        document.createElement("a");
+        document.createElement(
+            "a"
+        );
 
 
-    linkButton.href = link;
+    linkButton.href =
+        link;
 
-    linkButton.target = "_blank";
+
+    linkButton.target =
+        "_blank";
+
 
     linkButton.rel =
         "noopener noreferrer";
@@ -1018,11 +1366,16 @@ function addGameRecommendation() {
 
 
     linkButton.innerHTML =
-        `<i class="fa-solid fa-globe mr-1"></i>Link`;
+        `
+            <i class="fa-solid fa-globe mr-1"></i>
+            Link
+        `;
 
 
     const likeButton =
-        document.createElement("button");
+        document.createElement(
+            "button"
+        );
 
 
     likeButton.className =
@@ -1030,43 +1383,54 @@ function addGameRecommendation() {
 
 
     likeButton.innerHTML =
-        `<i class="fa-solid fa-heart mr-1"></i><span>0</span>`;
+        `
+            <i class="fa-solid fa-heart mr-1"></i>
+            <span>0</span>
+        `;
 
 
-    likeButton.onclick =
-        function () {
+    likeButton.addEventListener(
+        "click",
+        () => {
 
-            likeGame(this);
+            likeGame(
+                likeButton
+            );
 
-        };
-
-
-    bottom.appendChild(linkButton);
-
-    bottom.appendChild(likeButton);
-
-
-    card.appendChild(top);
-
-    card.appendChild(bottom);
+        }
+    );
 
 
-    container.prepend(card);
+    bottom.appendChild(
+        linkButton
+    );
 
 
-    document.getElementById(
-        "gameTitle"
-    ).value = "";
+    bottom.appendChild(
+        likeButton
+    );
 
 
-    document.getElementById(
-        "gameImg"
-    ).value = "";
+    card.appendChild(
+        top
+    );
 
 
-    document.getElementById(
-        "gameLink"
-    ).value = "";
+    card.appendChild(
+        bottom
+    );
+
+
+    container.prepend(
+        card
+    );
+
+
+    titleInput.value = "";
+
+    imgInput.value = "";
+
+    linkInput.value = "";
 
 
     toggleAdminPanel();
@@ -1080,17 +1444,37 @@ function addGameRecommendation() {
 
 function likeGame(button) {
 
-    const span =
-        button.querySelector("span");
+    if (!button) {
 
-
-    if (!span) {
         return;
+
     }
 
 
+    const span =
+        button.querySelector(
+            "span"
+        );
+
+
+    if (!span) {
+
+        return;
+
+    }
+
+
+    const current =
+        parseInt(
+            span.textContent,
+            10
+        ) || 0;
+
+
     span.textContent =
-        parseInt(span.textContent || "0", 10) + 1;
+        String(
+            current + 1
+        );
 
 }
 
@@ -1101,9 +1485,25 @@ function likeGame(button) {
 
 function buyItem(cost) {
 
-    if (userPoints >= cost) {
+    const price =
+        Number(cost);
 
-        userPoints -= cost;
+
+    if (
+        !Number.isFinite(price) ||
+        price <= 0
+    ) {
+
+        return;
+
+    }
+
+
+    if (
+        userPoints >= price
+    ) {
+
+        userPoints -= price;
 
 
         localStorage.setItem(
@@ -1137,7 +1537,25 @@ function buyItem(cost) {
 function sendChatMessage() {
 
     const input =
-        document.getElementById("chatInput");
+        document.getElementById(
+            "chatInput"
+        );
+
+
+    const chatContainer =
+        document.getElementById(
+            "chatMessages"
+        );
+
+
+    if (
+        !input ||
+        !chatContainer
+    ) {
+
+        return;
+
+    }
 
 
     const text =
@@ -1145,7 +1563,9 @@ function sendChatMessage() {
 
 
     if (!text) {
+
         return;
+
     }
 
 
@@ -1160,12 +1580,10 @@ function sendChatMessage() {
     }
 
 
-    const chatContainer =
-        document.getElementById("chatMessages");
-
-
     const msgDiv =
-        document.createElement("div");
+        document.createElement(
+            "div"
+        );
 
 
     msgDiv.className =
@@ -1173,7 +1591,9 @@ function sendChatMessage() {
 
 
     const username =
-        document.createElement("span");
+        document.createElement(
+            "span"
+        );
 
 
     username.className =
@@ -1184,7 +1604,9 @@ function sendChatMessage() {
         currentUser.name + ":";
 
 
-    msgDiv.appendChild(username);
+    msgDiv.appendChild(
+        username
+    );
 
 
     msgDiv.appendChild(
@@ -1194,7 +1616,9 @@ function sendChatMessage() {
     );
 
 
-    chatContainer.appendChild(msgDiv);
+    chatContainer.appendChild(
+        msgDiv
+    );
 
 
     chatContainer.scrollTop =
@@ -1210,9 +1634,11 @@ function sendChatMessage() {
 // PUSH
 // =========================================================
 
-function requestPushPermission() {
+async function requestPushPermission() {
 
-    if (!("Notification" in window)) {
+    if (
+        !("Notification" in window)
+    ) {
 
         alert(
             "A böngésződ nem támogatja a push értesítéseket."
@@ -1223,39 +1649,85 @@ function requestPushPermission() {
     }
 
 
-    Notification
-        .requestPermission()
-        .then(permission => {
+    try {
 
-            if (permission === "granted") {
+        const permission =
+            await Notification.requestPermission();
 
-                alert(
-                    "🔔 Push értesítések engedélyezve!"
-                );
 
-            } else {
+        if (
+            permission === "granted"
+        ) {
 
-                alert(
-                    "A push értesítések nincsenek engedélyezve."
-                );
+            alert(
+                "🔔 Push értesítések engedélyezve!"
+            );
 
-            }
+        } else {
 
-        });
+            alert(
+                "A push értesítések nincsenek engedélyezve."
+            );
+
+        }
+
+    } catch (error) {
+
+        console.error(
+            "Push permission hiba:",
+            error
+        );
+
+    }
 
 }
 
 
 // =========================================================
-// SEGÉDFÜGGVÉNY
+// CSS URL BIZTONSÁG
+// =========================================================
+
+function escapeCssUrl(value) {
+
+    return String(value)
+        .replaceAll(
+            "\\",
+            "\\\\"
+        )
+        .replaceAll(
+            '"',
+            '\\"'
+        )
+        .replaceAll(
+            "\n",
+            ""
+        )
+        .replaceAll(
+            "\r",
+            ""
+        );
+
+}
+
+
+// =========================================================
+// SLEEP
 // =========================================================
 
 function sleep(ms) {
 
     return new Promise(
-        resolve => setTimeout(resolve, ms)
+        resolve => {
+
+            setTimeout(
+                resolve,
+                ms
+            );
+
+        }
     );
 
 }
 
 </script>
+```
