@@ -1,0 +1,15 @@
+{
+  "name": "XeonApp",
+  "short_name": "XeonApp",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0d1117",
+  "theme_color": "#5865F2",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/2111/2111370.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
