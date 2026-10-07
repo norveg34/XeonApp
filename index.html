@@ -36,14 +36,14 @@
             </div>
             <div>
                 <h1 class="text-2xl font-black text-white tracking-wide">XeonApp</h1>
-                <p class="text-xs text-gray-400 mt-1">Lépj be a Discord fiókoddal a tartalom eléréséhez</p>
+                <p class="text-xs text-gray-400 mt-1">Lépj be a hivatalos Discord fiókoddal a folytatáshoz</p>
             </div>
 
-            <button onclick="loginWithDiscord()" class="w-full bg-[#5865F2] hover:bg-[#4752C4] text-white font-bold text-sm py-3.5 rounded-2xl flex items-center justify-center space-x-3 shadow-lg shadow-[#5865F2]/40 transition transform active:scale-95">
+            <button onclick="redirectToDiscord()" class="w-full bg-[#5865F2] hover:bg-[#4752C4] text-white font-bold text-sm py-3.5 rounded-2xl flex items-center justify-center space-x-3 shadow-lg shadow-[#5865F2]/40 transition transform active:scale-95">
                 <i class="fa-brands fa-discord text-lg"></i>
                 <span>Discord Bejelentkezés</span>
             </button>
-            <p class="text-[10px] text-gray-500">Az alkalmazás használatához Discord hitelesítés szükséges.</p>
+            <p class="text-[10px] text-gray-500">Biztonságos OAuth2 hitelesítés.</p>
         </div>
     </div>
 
@@ -227,15 +227,49 @@
 
     <!-- LOGIKA SCRIPT -->
     <script>
+        // ÍRD BE IDE A DISCORD DEVELOPER PORTALON KAPOTT CLIENT ID-DAT:
+        const DISCORD_CLIENT_ID = "AZ_ÉN_CLIENT_ID_M IT_ITT_CSERÉLJ_LE"; 
+
         let currentUser = JSON.parse(localStorage.getItem('xeon_user')) || null;
         let userPoints = parseInt(localStorage.getItem('xeon_points')) || 1250;
-        
-        // ITT ÁLLÍTHATOD BE A TITKOS ADMIN PIN-KÓDOT:
-        const ADMIN_SECRET_PIN = "xeon2026"; 
 
         document.addEventListener('DOMContentLoaded', () => {
-            checkAuthStatus();
+            // Ellenőrizzük, hogy a Discord OAuth2 visszairányított-e a tokennel (#access_token)
+            const fragment = window.location.hash.substring(1);
+            const params = new URLSearchParams(fragment);
+            const accessToken = params.get('access_token');
+
+            if (accessToken) {
+                // Lekérjük a Discord felhasználó adatait a kapott token alapján
+                fetch('https://discord.com/api/users/@me', {
+                    headers: { authorization: `Bearer ${accessToken}` }
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.username) {
+                        const username = data.username;
+                        // Ha a te fiókod lép be, automatikusan admin lesz
+                        const role = (username.toLowerCase() === 'norveg34') ? 'admin' : 'viewer';
+                        
+                        currentUser = { name: username, role: role };
+                        localStorage.setItem('xeon_user', JSON.stringify(currentUser));
+                        
+                        // Tiszta URL hash
+                        window.history.replaceState({}, document.title, window.location.pathname);
+                        checkAuthStatus();
+                    }
+                })
+                .catch(err => console.error('Discord API hiba:', err));
+            } else {
+                checkAuthStatus();
+            }
         });
+
+        function redirectToDiscord() {
+            const redirectUri = window.location.origin + window.location.pathname;
+            const discordAuthUrl = `https://discord.com/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=token&scope=identify`;
+            window.location.href = discordAuthUrl;
+        }
 
         function checkAuthStatus() {
             if (currentUser) {
@@ -246,29 +280,6 @@
                 document.getElementById('loginScreen').classList.add('active');
                 document.getElementById('appScreen').classList.remove('active');
             }
-        }
-
-        function loginWithDiscord() {
-            let username = prompt("Add meg a Discord neved:");
-            if (!username) return;
-            username = username.trim();
-
-            let role = 'viewer';
-
-            // Ha admin nevet ad meg, kérjük a titkos PIN-kódot, különben bárki hiába írná be, nem lesz admin!
-            if (username.toLowerCase() === 'norveg34' || username.toLowerCase() === 'xeonskorp') {
-                let pin = prompt("Add meg a titkos admin PIN-kódot:");
-                if (pin === ADMIN_SECRET_PIN) {
-                    role = 'admin';
-                } else {
-                    alert('Hibás PIN-kód! Nézőként léptettünk be.');
-                    role = 'viewer';
-                }
-            }
-            
-            currentUser = { name: username, role: role };
-            localStorage.setItem('xeon_user', JSON.stringify(currentUser));
-            checkAuthStatus();
         }
 
         function logout() {
