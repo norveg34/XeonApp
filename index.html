@@ -28,7 +28,7 @@
 </head>
 <body class="pb-20">
 
-    <!-- 1. LOGIN SCREEN (Ha még nincs bejelentkezve) -->
+    <!-- 1. LOGIN SCREEN -->
     <div id="loginScreen" class="screen-view active fixed inset-0 z-50 bg-[#0d1117] flex flex-col items-center justify-center p-6 text-center">
         <div class="glass w-full max-w-sm p-8 rounded-3xl space-y-6 border-[#5865F2]/40 shadow-2xl shadow-[#5865F2]/20">
             <div class="w-20 h-20 rounded-3xl bg-[#5865F2] flex items-center justify-center font-bold text-white mx-auto text-4xl shadow-lg shadow-[#5865F2]/50">
@@ -47,7 +47,7 @@
         </div>
     </div>
 
-    <!-- 2. MAIN APP SCREEN (Ha már be van jelentkezve) -->
+    <!-- 2. MAIN APP SCREEN -->
     <div id="appScreen" class="screen-view">
         <!-- FELSŐ LÉC -->
         <header class="glass sticky top-0 z-40 px-4 py-3 flex justify-between items-center border-b border-gray-800">
@@ -68,7 +68,7 @@
         <!-- TARTALOM KONTÉNER -->
         <main class="max-w-md mx-auto p-4 space-y-4">
 
-            <!-- FŐOLDAL / HÍREK & NAPI BÓNUSZ -->
+            <!-- FŐOLDAL -->
             <section id="tab-home" class="tab-content active space-y-4">
                 <div class="glass p-4 rounded-2xl bg-gradient-to-r from-indigo-900/40 to-purple-900/40 border-indigo-500/30 flex justify-between items-center">
                     <div>
@@ -88,15 +88,10 @@
                         <h3 class="font-bold text-sm text-white mt-2">Hétvégi Horror Maraton!</h3>
                         <p class="text-xs text-gray-300 mt-1">Phasmophobia és Outlast Trials maraton jön a hétvégén KumaHunnal és Dzsannával! Ne hagyjátok ki.</p>
                     </div>
-                    <div class="glass p-4 rounded-2xl">
-                        <span class="text-[10px] bg-green-500/20 text-green-300 px-2 py-0.5 rounded-full font-semibold">Mérföldkő</span>
-                        <h3 class="font-bold text-sm text-white mt-2">Köszönjük a 1,400 feliratkozót!</h3>
-                        <p class="text-xs text-gray-300 mt-1">Hatalmas köszi mindenkinek a támogatásért! Jönnek az új egyedi cuccok a Shopba.</p>
-                    </div>
                 </div>
             </section>
 
-            <!-- TWITCH MENETREND -->
+            <!-- MENETREND -->
             <section id="tab-schedule" class="tab-content space-y-4">
                 <div class="flex justify-between items-center">
                     <h2 class="text-base font-bold text-white"><i class="fa-solid fa-calendar-days mr-2 text-[#5865F2]"></i>Heti Menetrend</h2>
@@ -105,7 +100,6 @@
                     </a>
                 </div>
 
-                <!-- Admin Menetrend hozzáadás (csak norveg34) -->
                 <div id="adminSchedulePanel" class="glass p-4 rounded-2xl border-indigo-500/50 hidden space-y-3">
                     <h3 class="text-xs font-bold text-indigo-300 uppercase tracking-wider">Új Stream Időpont (Admin)</h3>
                     <input type="text" id="schedDay" placeholder="Nap és Idő (pl. Szerda - 18:00)" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
@@ -120,13 +114,6 @@
                             <div class="text-sm font-semibold text-white mt-0.5">Dead by Daylight (KumaHunnal)</div>
                         </div>
                         <span class="text-[10px] bg-gray-800 text-gray-300 px-2.5 py-1 rounded-lg">Közelgő</span>
-                    </div>
-                    <div class="glass p-3.5 rounded-xl flex justify-between items-center border-indigo-500/40">
-                        <div>
-                            <div class="text-xs text-indigo-400 font-bold">Kedd - 19:00</div>
-                            <div class="text-sm font-semibold text-white mt-0.5">Phasmophobia Twitch Drops</div>
-                        </div>
-                        <span class="text-[10px] bg-[#5865F2] text-white px-2.5 py-1 rounded-lg font-bold">Élő Ma</span>
                     </div>
                 </div>
             </section>
@@ -151,33 +138,16 @@
                         </div>
                         <button onclick="buyItem(4000)" class="mt-3 w-full bg-[#5865F2] hover:bg-[#4752C4] text-white text-xs font-bold py-2 rounded-xl">4,000 Pont</button>
                     </div>
-                    <div class="glass p-3 rounded-2xl flex flex-col justify-between">
-                        <div>
-                            <div class="h-24 bg-gray-800/80 rounded-xl mb-2 flex items-center justify-center text-red-400"><i class="fa-solid fa-skull text-2xl"></i></div>
-                            <h3 class="font-bold text-xs text-white">DbD DLC Kulcs</h3>
-                            <p class="text-[10px] text-gray-400 mt-0.5">Választható fejezet</p>
-                        </div>
-                        <button onclick="buyItem(2500)" class="mt-3 w-full bg-[#5865F2] hover:bg-[#4752C4] text-white text-xs font-bold py-2 rounded-xl">2,500 Pont</button>
-                    </div>
-                    <div class="glass p-3 rounded-2xl flex flex-col justify-between">
-                        <div>
-                            <div class="h-24 bg-gray-800/80 rounded-xl mb-2 flex items-center justify-center text-blue-400"><i class="fa-brands fa-discord text-2xl"></i></div>
-                            <h3 class="font-bold text-xs text-white">Discord Nitro (1 Hó)</h3>
-                            <p class="text-[10px] text-gray-400 mt-0.5">Ajándék link</p>
-                        </div>
-                        <button onclick="buyItem(5000)" class="mt-3 w-full bg-[#5865F2] hover:bg-[#4752C4] text-white text-xs font-bold py-2 rounded-xl">5,000 Pont</button>
-                    </div>
                 </div>
             </section>
 
-            <!-- JÁTÉK AJÁNLÓ -->
+            <!-- AJÁNLÓ -->
             <section id="tab-recommend" class="tab-content space-y-4">
                 <div class="flex justify-between items-center">
                     <h2 class="text-base font-bold text-white"><i class="fa-solid fa-gamepad mr-2 text-[#5865F2]"></i>Játék Ajánlók</h2>
                     <div id="adminAddBtnContainer"></div>
                 </div>
 
-                <!-- Új Ajánló Panel (Csak Admin norveg34) -->
                 <div id="adminPanel" class="glass p-4 rounded-2xl border-indigo-500/50 hidden space-y-3">
                     <h3 class="text-xs font-bold text-indigo-300 uppercase tracking-wider">Új ajánlás hozzáadása (Admin)</h3>
                     <input type="text" id="gameTitle" placeholder="Játék címe" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
@@ -186,7 +156,6 @@
                     <button onclick="addGameRecommendation()" class="w-full bg-[#5865F2] hover:bg-[#4752C4] text-white font-bold text-xs py-2 rounded-xl">Közzététel</button>
                 </div>
 
-                <!-- Ajánlott Játékok Listája -->
                 <div class="grid grid-cols-2 gap-3" id="gameListContainer">
                     <div class="glass rounded-2xl overflow-hidden flex flex-col justify-between">
                         <div>
@@ -204,7 +173,7 @@
                 </div>
             </section>
 
-            <!-- PROFIL & KÖZÖSSÉGI CHAT -->
+            <!-- PROFIL & CHAT -->
             <section id="tab-profile" class="tab-content space-y-4">
                 <div class="glass p-5 rounded-2xl text-center space-y-3">
                     <div class="w-16 h-16 rounded-full bg-[#5865F2]/30 border-2 border-[#5865F2] mx-auto flex items-center justify-center text-2xl text-white font-bold">
@@ -217,35 +186,21 @@
                     <button onclick="logout()" class="w-full bg-red-600/80 hover:bg-red-600 text-white font-bold text-xs py-2.5 rounded-xl">Kijelentkezés</button>
                 </div>
 
-                <!-- Élő Közösségi Chat Box -->
                 <div class="glass p-4 rounded-2xl space-y-3">
                     <h4 class="text-xs font-bold text-white uppercase tracking-wider"><i class="fa-solid fa-comments mr-2 text-[#5865F2]"></i>Közösségi Chat</h4>
                     <div id="chatMessages" class="bg-gray-900/80 border border-gray-800 rounded-xl p-3 h-40 overflow-y-auto space-y-2 text-xs">
-                        <div class="text-gray-400"><span class="font-bold text-indigo-400">norveg34:</span> Üdv mindenki a XeonApp-ban! Hívjátok meg a haverokat is!</div>
-                        <div class="text-gray-400"><span class="font-bold text-green-400">dzsanna:</span> Köszi a fasza appot, imádom! ❤️</div>
+                        <div class="text-gray-400"><span class="font-bold text-indigo-400">norveg34:</span> Üdv mindenki a XeonApp-ban!</div>
                     </div>
                     <div class="flex space-x-2">
-                        <input type="text" id="chatInput" placeholder="Írj valamit a chatbe..." class="flex-1 bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-[#5865F2]">
+                        <input type="text" id="chatInput" placeholder="Írj valamit..." class="flex-1 bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-[#5865F2]">
                         <button onclick="sendChatMessage()" class="bg-[#5865F2] hover:bg-[#4752C4] text-white px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-paper-plane"></i></button>
-                    </div>
-                </div>
-
-                <div class="glass p-4 rounded-2xl space-y-2">
-                    <h4 class="text-xs font-bold text-white uppercase tracking-wider mb-1">Alkalmazás Infó</h4>
-                    <div class="flex justify-between text-xs text-gray-400">
-                        <span>Verzió</span>
-                        <span class="text-gray-200">1.5.0 PWA</span>
-                    </div>
-                    <div class="flex justify-between text-xs text-gray-400">
-                        <span>Fő admin</span>
-                        <span class="text-indigo-400 font-semibold">norveg34</span>
                     </div>
                 </div>
             </section>
 
         </main>
 
-        <!-- ALSÓ NAVIGÁCIÓS SÁV -->
+        <!-- ALSÓ NAVIGÁCIÓ -->
         <nav class="glass fixed bottom-0 left-0 right-0 z-30 px-2 py-2 flex justify-around items-center border-t border-gray-800">
             <button onclick="switchTab('home')" class="nav-btn flex flex-col items-center text-[#5865F2]" data-target="home">
                 <i class="fa-solid fa-house text-base"></i>
@@ -274,6 +229,9 @@
     <script>
         let currentUser = JSON.parse(localStorage.getItem('xeon_user')) || null;
         let userPoints = parseInt(localStorage.getItem('xeon_points')) || 1250;
+        
+        // ITT ÁLLÍTHATOD BE A TITKOS ADMIN PIN-KÓDOT:
+        const ADMIN_SECRET_PIN = "xeon2026"; 
 
         document.addEventListener('DOMContentLoaded', () => {
             checkAuthStatus();
@@ -281,27 +239,35 @@
 
         function checkAuthStatus() {
             if (currentUser) {
-                // Be van jelentkezve -> Mutatjuk a fő appot, elrejtjük a login képernyőt
                 document.getElementById('loginScreen').classList.remove('active');
                 document.getElementById('appScreen').classList.add('active');
                 updateUserUI();
             } else {
-                // Nincs bejelentkezve -> Csak a login képernyő látszik
                 document.getElementById('loginScreen').classList.add('active');
                 document.getElementById('appScreen').classList.remove('active');
             }
         }
 
         function loginWithDiscord() {
-            let username = prompt("Add meg a Discord felhasználóneved a belépéshez:", "norveg34");
+            let username = prompt("Add meg a Discord neved:");
             if (!username) return;
-
             username = username.trim();
-            const role = (username.toLowerCase() === 'norveg34') ? 'admin' : 'viewer';
+
+            let role = 'viewer';
+
+            // Ha admin nevet ad meg, kérjük a titkos PIN-kódot, különben bárki hiába írná be, nem lesz admin!
+            if (username.toLowerCase() === 'norveg34' || username.toLowerCase() === 'xeonskorp') {
+                let pin = prompt("Add meg a titkos admin PIN-kódot:");
+                if (pin === ADMIN_SECRET_PIN) {
+                    role = 'admin';
+                } else {
+                    alert('Hibás PIN-kód! Nézőként léptettünk be.');
+                    role = 'viewer';
+                }
+            }
             
             currentUser = { name: username, role: role };
             localStorage.setItem('xeon_user', JSON.stringify(currentUser));
-            
             checkAuthStatus();
         }
 
@@ -359,8 +325,7 @@
         }
 
         function toggleAdminPanel() {
-            const panel = document.getElementById('adminPanel');
-            panel.classList.toggle('hidden');
+            document.getElementById('adminPanel').classList.toggle('hidden');
         }
 
         function addScheduleItem() {
@@ -381,7 +346,7 @@
             list.prepend(item);
             document.getElementById('schedDay').value = '';
             document.getElementById('schedGame').value = '';
-            alert('Menetrend sikeresen frissítve!');
+            alert('Menetrend frissítve!');
         }
 
         function addGameRecommendation() {
@@ -408,7 +373,6 @@
                 </div>
             `;
             container.prepend(card);
-
             document.getElementById('gameTitle').value = '';
             document.getElementById('gameImg').value = '';
             document.getElementById('gameLink').value = '';
@@ -425,9 +389,9 @@
                 userPoints -= cost;
                 localStorage.setItem('xeon_points', userPoints);
                 document.getElementById('userPoints').innerText = userPoints.toLocaleString() + ' Pont';
-                alert('Sikeres beváltás! A nyeremény kódot hamarosan megkapod Discord üzenetben.');
+                alert('Sikeres beváltás! A kódot hamarosan megkapod Discordon.');
             } else {
-                alert('Nincs elég pontod ehhez a jutalomhoz! Nézd a streameket és gyűjts többet.');
+                alert('Nincs elég pontod!');
             }
         }
 
@@ -448,14 +412,8 @@
         function requestPushPermission() {
             if ("Notification" in window) {
                 Notification.requestPermission().then(permission => {
-                    if (permission === "granted") {
-                        alert('Push értesítések engedélyezve!');
-                    } else {
-                        alert('Az értesítések engedélyezése elutasítva.');
-                    }
+                    if (permission === "granted") alert('Push értesítések engedélyezve!');
                 });
-            } else {
-                alert('Ez a böngésző nem támogatja a push értesítéseket.');
             }
         }
     </script>
