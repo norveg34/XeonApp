@@ -1,843 +1,24 @@
-<!DOCTYPE html>
-<html lang="hu">
-<head>
-
-    <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
-    >
-
-    <title>XeonApp - Streamer Közösség</title>
-
-    <meta
-        name="theme-color"
-        content="#0d1117"
-    >
-
-    <meta
-        name="apple-mobile-web-app-capable"
-        content="yes"
-    >
-
-    <meta
-        name="apple-mobile-web-app-status-bar-style"
-        content="black-translucent"
-    >
-
-    <meta
-        name="apple-mobile-web-app-title"
-        content="XeonApp"
-    >
-
-    <link
-        rel="apple-touch-icon"
-        href="https://cdn-icons-png.flaticon.com/512/2111/2111370.png"
-    >
-
-    <link
-        rel="manifest"
-        href="manifest.json"
-    >
-
-    <script src="https://cdn.tailwindcss.com"></script>
-
-    <link
-        rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-    >
-
-    <style>
-
-        body {
-            background-color: #0d1117;
-            color: #e6edf3;
-            font-family:
-                -apple-system,
-                BlinkMacSystemFont,
-                "Segoe UI",
-                Roboto,
-                sans-serif;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        .glass {
-            background: rgba(22, 27, 34, 0.90);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        .screen-view {
-            display: none;
-        }
-
-        .screen-view.active {
-            display: block;
-        }
-
-    </style>
-
-</head>
-
-<body class="pb-20">
-
-
-<!-- ========================================================= -->
-<!-- LOGIN -->
-<!-- ========================================================= -->
-
-<div
-    id="loginScreen"
-    class="screen-view active fixed inset-0 z-50 bg-[#0d1117] flex flex-col items-center justify-center p-6 text-center"
->
-
-    <div
-        class="glass w-full max-w-sm p-8 rounded-3xl space-y-5 border-[#5865F2]/40 shadow-2xl shadow-[#5865F2]/20"
-    >
-
-        <div
-            class="w-20 h-20 rounded-3xl bg-[#5865F2] flex items-center justify-center font-bold text-white mx-auto text-4xl shadow-lg shadow-[#5865F2]/50"
-        >
-            <i class="fa-brands fa-discord"></i>
-        </div>
-
-        <div>
-
-            <h1 class="text-2xl font-black text-white tracking-wide">
-                XeonApp
-            </h1>
-
-            <p class="text-xs text-gray-400 mt-1">
-                Jelentkezz be a Discord-fiókoddal
-            </p>
-
-        </div>
-
-        <button
-            id="discordLoginButton"
-            onclick="loginWithDiscord()"
-            class="w-full bg-[#5865F2] hover:bg-[#4752C4] text-white font-bold text-sm py-3.5 rounded-2xl shadow-lg shadow-[#5865F2]/40 transition transform active:scale-95"
-        >
-
-            <i class="fa-brands fa-discord mr-2"></i>
-
-            Bejelentkezés Discorddal
-
-        </button>
-
-        <p
-            id="loginStatus"
-            class="text-[10px] text-gray-500"
-        >
-            A belépés a Discord hivatalos OAuth2 rendszerén keresztül történik.
-        </p>
-
-    </div>
-
-</div>
-
-
-<!-- ========================================================= -->
-<!-- APP -->
-<!-- ========================================================= -->
-
-<div id="appScreen" class="screen-view">
-
-
-    <!-- HEADER -->
-
-    <header
-        class="glass sticky top-0 z-40 px-4 py-3 flex justify-between items-center border-b border-gray-800"
-    >
-
-        <div class="flex items-center space-x-2">
-
-            <div
-                class="w-9 h-9 rounded-xl bg-[#5865F2] flex items-center justify-center font-bold text-white shadow-lg shadow-[#5865F2]/30"
-            >
-                <i class="fa-brands fa-discord"></i>
-            </div>
-
-            <span
-                class="font-bold text-lg tracking-wide text-white"
-            >
-                XeonApp
-            </span>
-
-        </div>
-
-
-        <div class="flex items-center space-x-3">
-
-            <button
-                onclick="requestPushPermission()"
-                class="text-gray-400 hover:text-white p-2 rounded-full bg-gray-800/60"
-                title="Push Értesítések"
-            >
-                <i class="fa-solid fa-bell text-sm"></i>
-            </button>
-
-            <div
-                id="userBadge"
-                class="text-xs px-3 py-1.5 rounded-full bg-gray-800 border border-gray-700 flex items-center space-x-2"
-            >
-
-                <span
-                    id="userName"
-                    class="text-indigo-300 font-bold"
-                >
-                    Vendég
-                </span>
-
-            </div>
-
-        </div>
-
-    </header>
-
-
-    <!-- MAIN -->
-
-    <main class="max-w-md mx-auto p-4 space-y-4">
-
-
-        <!-- HOME -->
-
-        <section
-            id="tab-home"
-            class="tab-content active space-y-4"
-        >
-
-            <div
-                class="glass p-4 rounded-2xl bg-gradient-to-r from-indigo-900/40 to-purple-900/40 border-indigo-500/30 flex justify-between items-center"
-            >
-
-                <div>
-
-                    <span
-                        class="text-xs uppercase tracking-wider text-indigo-300 font-semibold"
-                    >
-                        Aktív Pontok
-                    </span>
-
-                    <div
-                        class="text-2xl font-black text-white mt-1"
-                        id="userPoints"
-                    >
-                        1 250 Pont
-                    </div>
-
-                </div>
-
-
-                <button
-                    onclick="claimDailyBonus()"
-                    class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold px-4 py-3 rounded-xl shadow-lg shadow-indigo-600/30 flex flex-col items-center"
-                >
-
-                    <i class="fa-solid fa-gift text-lg mb-1"></i>
-
-                    <span>Napi Ajándék</span>
-
-                </button>
-
-            </div>
-
-
-            <h2 class="text-base font-bold text-white mt-6 mb-3">
-
-                <i class="fa-solid fa-newspaper mr-2 text-[#5865F2]"></i>
-
-                Közösségi Hírek
-
-            </h2>
-
-
-            <div class="space-y-3">
-
-                <div class="glass p-4 rounded-2xl">
-
-                    <span
-                        class="text-[10px] bg-indigo-500/20 text-indigo-300 px-2 py-0.5 rounded-full font-semibold"
-                    >
-                        Hír
-                    </span>
-
-                    <h3 class="font-bold text-sm text-white mt-2">
-                        Hétvégi Horror Maraton!
-                    </h3>
-
-                    <p class="text-xs text-gray-300 mt-1">
-                        Phasmophobia és Outlast Trials maraton jön a hétvégén KumaHunnal és Dzsannával! Ne hagyjátok ki.
-                    </p>
-
-                </div>
-
-            </div>
-
-        </section>
-
-
-        <!-- SCHEDULE -->
-
-        <section
-            id="tab-schedule"
-            class="tab-content space-y-4"
-        >
-
-            <div class="flex justify-between items-center">
-
-                <h2 class="text-base font-bold text-white">
-
-                    <i class="fa-solid fa-calendar-days mr-2 text-[#5865F2]"></i>
-
-                    Heti Menetrend
-
-                </h2>
-
-
-                <a
-                    href="https://www.twitch.tv/xeonskorpofficial/schedule"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="text-xs bg-[#5865F2] hover:bg-[#4752C4] px-3 py-1.5 rounded-xl text-white font-semibold flex items-center"
-                >
-
-                    <i class="fa-brands fa-twitch mr-1"></i>
-
-                    Twitch
-
-                </a>
-
-            </div>
-
-
-            <div
-                id="adminSchedulePanel"
-                class="glass p-4 rounded-2xl border-indigo-500/50 hidden space-y-3"
-            >
-
-                <h3
-                    class="text-xs font-bold text-indigo-300 uppercase tracking-wider"
-                >
-                    Új Stream Időpont (Admin)
-                </h3>
-
-
-                <input
-                    type="text"
-                    id="schedDay"
-                    placeholder="Nap és Idő (pl. Szerda - 18:00)"
-                    class="w-full bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
-                >
-
-
-                <input
-                    type="text"
-                    id="schedGame"
-                    placeholder="Játék / Tartalom címe"
-                    class="w-full bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
-                >
-
-
-                <button
-                    onclick="addScheduleItem()"
-                    class="w-full bg-[#5865F2] hover:bg-[#4752C4] text-white font-bold text-xs py-2 rounded-xl"
-                >
-                    Menetrend frissítése
-                </button>
-
-            </div>
-
-
-            <div
-                class="space-y-2.5"
-                id="scheduleList"
-            >
-
-                <div
-                    class="glass p-3.5 rounded-xl flex justify-between items-center"
-                >
-
-                    <div>
-
-                        <div class="text-xs text-indigo-400 font-bold">
-                            Hétfő - 18:00
-                        </div>
-
-                        <div class="text-sm font-semibold text-white mt-0.5">
-                            Dead by Daylight (KumaHunnal)
-                        </div>
-
-                    </div>
-
-                    <span
-                        class="text-[10px] bg-gray-800 text-gray-300 px-2.5 py-1 rounded-lg"
-                    >
-                        Közelgő
-                    </span>
-
-                </div>
-
-            </div>
-
-        </section>
-
-
-        <!-- SHOP -->
-
-        <section
-            id="tab-shop"
-            class="tab-content space-y-4"
-        >
-
-            <h2 class="text-base font-bold text-white">
-
-                <i class="fa-solid fa-store mr-2 text-[#5865F2]"></i>
-
-                PontShop Jutalmak
-
-            </h2>
-
-
-            <div class="grid grid-cols-2 gap-3">
-
-                <div
-                    class="glass p-3 rounded-2xl flex flex-col justify-between"
-                >
-
-                    <div>
-
-                        <div
-                            class="h-24 bg-gray-800/80 rounded-xl mb-2 flex items-center justify-center text-indigo-400"
-                        >
-                            <i class="fa-solid fa-gift text-2xl"></i>
-                        </div>
-
-                        <h3 class="font-bold text-xs text-white">
-                            Steam 3000 HUF Kártya
-                        </h3>
-
-                        <p class="text-[10px] text-gray-400 mt-0.5">
-                            Digitális kód küldés
-                        </p>
-
-                    </div>
-
-
-                    <button
-                        onclick="buyItem(3500)"
-                        class="mt-3 w-full bg-[#5865F2] hover:bg-[#4752C4] text-white text-xs font-bold py-2 rounded-xl"
-                    >
-                        3 500 Pont
-                    </button>
-
-                </div>
-
-
-                <div
-                    class="glass p-3 rounded-2xl flex flex-col justify-between"
-                >
-
-                    <div>
-
-                        <div
-                            class="h-24 bg-gray-800/80 rounded-xl mb-2 flex items-center justify-center text-green-400"
-                        >
-                            <i class="fa-brands fa-xbox text-2xl"></i>
-                        </div>
-
-                        <h3 class="font-bold text-xs text-white">
-                            Xbox Game Pass (1 Hó)
-                        </h3>
-
-                        <p class="text-[10px] text-gray-400 mt-0.5">
-                            PC / Konzol kód
-                        </p>
-
-                    </div>
-
-
-                    <button
-                        onclick="buyItem(4000)"
-                        class="mt-3 w-full bg-[#5865F2] hover:bg-[#4752C4] text-white text-xs font-bold py-2 rounded-xl"
-                    >
-                        4 000 Pont
-                    </button>
-
-                </div>
-
-            </div>
-
-        </section>
-
-
-        <!-- RECOMMEND -->
-
-        <section
-            id="tab-recommend"
-            class="tab-content space-y-4"
-        >
-
-            <div class="flex justify-between items-center">
-
-                <h2 class="text-base font-bold text-white">
-
-                    <i class="fa-solid fa-gamepad mr-2 text-[#5865F2]"></i>
-
-                    Játék Ajánlók
-
-                </h2>
-
-
-                <div id="adminAddBtnContainer"></div>
-
-            </div>
-
-
-            <div
-                id="adminPanel"
-                class="glass p-4 rounded-2xl border-indigo-500/50 hidden space-y-3"
-            >
-
-                <h3
-                    class="text-xs font-bold text-indigo-300 uppercase tracking-wider"
-                >
-                    Új ajánlás hozzáadása (Admin)
-                </h3>
-
-
-                <input
-                    type="text"
-                    id="gameTitle"
-                    placeholder="Játék címe"
-                    class="w-full bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
-                >
-
-
-                <input
-                    type="text"
-                    id="gameImg"
-                    placeholder="Borítókép URL"
-                    class="w-full bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
-                >
-
-
-                <input
-                    type="text"
-                    id="gameLink"
-                    placeholder="Játék Link"
-                    class="w-full bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
-                >
-
-
-                <button
-                    onclick="addGameRecommendation()"
-                    class="w-full bg-[#5865F2] hover:bg-[#4752C4] text-white font-bold text-xs py-2 rounded-xl"
-                >
-                    Közzététel
-                </button>
-
-            </div>
-
-
-            <div
-                class="grid grid-cols-2 gap-3"
-                id="gameListContainer"
-            >
-
-                <div
-                    class="glass rounded-2xl overflow-hidden flex flex-col justify-between"
-                >
-
-                    <div>
-
-                        <div
-                            class="h-44 bg-gray-800 bg-cover bg-center"
-                            style="background-image: url('https://images.unsplash.com/photo-1542751371-adc38448a05e?w=500');"
-                        ></div>
-
-
-                        <div class="p-3">
-
-                            <h3 class="font-bold text-xs text-white">
-                                Nested Lands
-                            </h3>
-
-                            <p class="text-[10px] text-indigo-400 mt-0.5">
-                                Ajánlja: norveg34
-                            </p>
-
-                        </div>
-
-                    </div>
-
-
-                    <div class="p-3 pt-0 flex space-x-2">
-
-                        <a
-                            href="https://www.twitch.tv/xeonskorpofficial"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            class="flex-1 bg-[#5865F2]/80 hover:bg-[#5865F2] text-center text-white text-[11px] font-bold py-1.5 rounded-xl"
-                        >
-
-                            <i class="fa-solid fa-globe mr-1"></i>
-
-                            Link
-
-                        </a>
-
-
-                        <button
-                            onclick="likeGame(this)"
-                            class="bg-gray-800 hover:bg-gray-700 px-3 text-red-400 text-[11px] font-bold py-1.5 rounded-xl"
-                        >
-
-                            <i class="fa-solid fa-heart mr-1"></i>
-
-                            <span>12</span>
-
-                        </button>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </section>
-
-
-        <!-- PROFILE -->
-
-        <section
-            id="tab-profile"
-            class="tab-content space-y-4"
-        >
-
-            <div
-                class="glass p-5 rounded-2xl text-center space-y-3"
-            >
-
-                <div
-                    id="profileAvatar"
-                    class="w-16 h-16 rounded-full bg-[#5865F2]/30 border-2 border-[#5865F2] mx-auto flex items-center justify-center text-2xl text-white font-bold overflow-hidden"
-                >
-                    <i class="fa-brands fa-discord"></i>
-                </div>
-
-
-                <div>
-
-                    <h3
-                        class="font-bold text-base text-white"
-                        id="profileName"
-                    >
-                        Fiók
-                    </h3>
-
-
-                    <p
-                        class="text-xs text-indigo-400 mt-0.5"
-                        id="profileRole"
-                    >
-                        Discord
-                    </p>
-
-                </div>
-
-
-                <button
-                    onclick="logout()"
-                    class="w-full bg-red-600/80 hover:bg-red-600 text-white font-bold text-xs py-2.5 rounded-xl"
-                >
-                    Kijelentkezés
-                </button>
-
-            </div>
-
-
-            <!-- CHAT -->
-
-            <div
-                class="glass p-4 rounded-2xl space-y-3"
-            >
-
-                <h4
-                    class="text-xs font-bold text-white uppercase tracking-wider"
-                >
-
-                    <i class="fa-solid fa-comments mr-2 text-[#5865F2]"></i>
-
-                    Közösségi Chat
-
-                </h4>
-
-
-                <div
-                    id="chatMessages"
-                    class="bg-gray-900/80 border border-gray-800 rounded-xl p-3 h-40 overflow-y-auto space-y-2 text-xs"
-                >
-
-                    <div class="text-gray-400">
-
-                        <span
-                            class="font-bold text-indigo-400"
-                        >
-                            norveg34:
-                        </span>
-
-                        Üdv mindenki a XeonApp-ban!
-
-                    </div>
-
-                </div>
-
-
-                <div class="flex space-x-2">
-
-                    <input
-                        type="text"
-                        id="chatInput"
-                        placeholder="Írj valamit..."
-                        class="flex-1 bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-[#5865F2]"
-                    >
-
-
-                    <button
-                        onclick="sendChatMessage()"
-                        class="bg-[#5865F2] hover:bg-[#4752C4] text-white px-4 py-2 rounded-xl text-xs font-bold"
-                    >
-
-                        <i class="fa-solid fa-paper-plane"></i>
-
-                    </button>
-
-                </div>
-
-            </div>
-
-        </section>
-
-    </main>
-
-
-    <!-- NAV -->
-
-    <nav
-        class="glass fixed bottom-0 left-0 right-0 z-30 px-2 py-2 flex justify-around items-center border-t border-gray-800 pb-safe"
-    >
-
-        <button
-            onclick="switchTab('home')"
-            class="nav-btn flex flex-col items-center text-[#5865F2]"
-            data-target="home"
-        >
-            <i class="fa-solid fa-house text-base"></i>
-            <span class="text-[10px] mt-1">Főoldal</span>
-        </button>
-
-
-        <button
-            onclick="switchTab('schedule')"
-            class="nav-btn flex flex-col items-center text-gray-400 hover:text-white"
-            data-target="schedule"
-        >
-            <i class="fa-solid fa-calendar text-base"></i>
-            <span class="text-[10px] mt-1">Menetrend</span>
-        </button>
-
-
-        <button
-            onclick="switchTab('shop')"
-            class="nav-btn flex flex-col items-center text-gray-400 hover:text-white"
-            data-target="shop"
-        >
-            <i class="fa-solid fa-store text-base"></i>
-            <span class="text-[10px] mt-1">Shop</span>
-        </button>
-
-
-        <button
-            onclick="switchTab('recommend')"
-            class="nav-btn flex flex-col items-center text-gray-400 hover:text-white"
-            data-target="recommend"
-        >
-            <i class="fa-solid fa-gamepad text-base"></i>
-            <span class="text-[10px] mt-1">Ajánló</span>
-        </button>
-
-
-        <button
-            onclick="switchTab('profile')"
-            class="nav-btn flex flex-col items-center text-gray-400 hover:text-white"
-            data-target="profile"
-        >
-            <i class="fa-solid fa-user text-base"></i>
-            <span class="text-[10px] mt-1">Profil</span>
-        </button>
-
-    </nav>
-
-</div>
-
-
-<!-- ========================================================= -->
-<!-- JAVASCRIPT -->
-<!-- ========================================================= -->
-
 <script>
 
-
-// =========================================================
-// BACKEND
-// =========================================================
-
-// FONTOS:
-// Az index.html most ugyanarról a szerverről jön,
-// mint az API.
-//
-// http://37.221.208.87:3050
-//
-// ezért nincs HTTPS -> HTTP probléma.
-
 const BACKEND_URL = window.location.origin;
-
-
-// =========================================================
-// FELHASZNÁLÓ
-// =========================================================
 
 let currentUser = null;
 
 let userPoints =
-    parseInt(
-        localStorage.getItem("xeon_points")
-    ) || 1250;
+    parseInt(localStorage.getItem("xeon_points"), 10) || 1250;
 
 
 // =========================================================
 // OLDAL INDULÁSA
 // =========================================================
 
-document.addEventListener(
-    "DOMContentLoaded",
-    async () => {
+document.addEventListener("DOMContentLoaded", async () => {
 
-        await checkDiscordLogin();
+    updatePointsUI();
 
-    }
-);
+    await checkDiscordLogin();
+
+});
 
 
 // =========================================================
@@ -846,245 +27,359 @@ document.addEventListener(
 
 function loginWithDiscord() {
 
+    const button =
+        document.getElementById("discordLoginButton");
+
     const status =
         document.getElementById("loginStatus");
+
+
+    if (button) {
+
+        button.disabled = true;
+
+        button.innerHTML = `
+            <i class="fa-solid fa-spinner fa-spin mr-2"></i>
+            Bejelentkezés...
+        `;
+
+    }
 
 
     if (status) {
 
         status.innerText =
-            "Átirányítás Discordra...";
+            "Átirányítás a Discord bejelentkezéshez...";
 
     }
 
 
-    window.location.href =
-        `${BACKEND_URL}/auth/discord`;
+    /*
+     * FONTOS:
+     *
+     * Nem használunk fetch() loginhoz.
+     * A böngészőt közvetlenül az OAuth endpoint-ra
+     * irányítjuk.
+     */
+
+    window.location.assign(
+        `${BACKEND_URL}/auth/discord`
+    );
 
 }
 
 
 // =========================================================
-// DISCORD SESSION ELLENŐRZÉSE
+// DISCORD SESSION ELLENŐRZÉS
 // =========================================================
 
 async function checkDiscordLogin() {
 
-    try {
+    const loginScreen =
+        document.getElementById("loginScreen");
 
-        console.log(
-            "Discord session ellenőrzése..."
-        );
-
-
-        const response =
-            await fetch(
-                `${BACKEND_URL}/api/me`,
-                {
-                    method: "GET",
-
-                    credentials: "include",
-
-                    headers: {
-                        "Accept": "application/json"
-                    }
-                }
-            );
+    const appScreen =
+        document.getElementById("appScreen");
 
 
-        console.log(
-            "Backend HTTP státusz:",
-            response.status
-        );
+    if (!loginScreen || !appScreen) {
+        return;
+    }
 
 
-        if (!response.ok) {
+    /*
+     * Először login képernyő.
+     */
 
-            throw new Error(
-                `Backend HTTP hiba: ${response.status}`
-            );
+    loginScreen.classList.add("active");
 
-        }
-
-
-        const data =
-            await response.json();
+    appScreen.classList.remove("active");
 
 
-        console.log(
-            "Backend login adat:",
-            data
-        );
+    /*
+     * OAuth callback után lehet egy kis késés,
+     * ezért maximum 5 alkalommal próbáljuk.
+     */
 
+    for (let attempt = 1; attempt <= 5; attempt++) {
 
-        if (
-            data.loggedIn === true &&
-            data.user
-        ) {
-
-            currentUser = {
-
-                id:
-                    data.user.id,
-
-                name:
-                    data.user.global_name ||
-                    data.user.username,
-
-                username:
-                    data.user.username,
-
-                avatar:
-                    data.user.avatar || null,
-
-                role:
-                    data.user.role || "user"
-
-            };
-
-
-            localStorage.setItem(
-                "xeon_user",
-                JSON.stringify(currentUser)
-            );
-
+        try {
 
             console.log(
-                "Sikeres Discord login:",
-                currentUser
+                `Discord session ellenőrzés: ${attempt}/5`
             );
 
 
-            checkAuthStatus();
+            const response =
+                await fetch(
+                    `${BACKEND_URL}/api/me`,
+                    {
+                        method: "GET",
 
-        } else {
+                        credentials: "include",
 
-            currentUser = null;
+                        cache: "no-store",
 
-            localStorage.removeItem(
-                "xeon_user"
-            );
-
-
-            checkAuthStatus();
-
-        }
-
-    } catch (error) {
-
-        console.error(
-            "Backend kapcsolat hiba:",
-            error
-        );
-
-
-        // Megpróbáljuk a korábbi felhasználót
-        // visszaállítani localStorage-ból.
-
-        const savedUser =
-            localStorage.getItem(
-                "xeon_user"
-            );
-
-
-        if (savedUser) {
-
-            try {
-
-                currentUser =
-                    JSON.parse(savedUser);
-
-
-                console.log(
-                    "User visszaállítva:",
-                    currentUser
+                        headers: {
+                            "Accept": "application/json"
+                        }
+                    }
                 );
 
 
-                checkAuthStatus();
+            console.log(
+                "API /api/me státusz:",
+                response.status
+            );
+
+
+            /*
+             * Ha nincs login:
+             * 401 / 403 esetén normálisan visszatérünk
+             * a login képernyőre.
+             */
+
+            if (
+                response.status === 401 ||
+                response.status === 403
+            ) {
+
+                currentUser = null;
+
+                showLoginScreen();
 
                 return;
 
-            } catch (storageError) {
+            }
 
-                console.error(
-                    "Mentett user hibás:",
-                    storageError
+
+            if (!response.ok) {
+
+                throw new Error(
+                    `/api/me HTTP ${response.status}`
                 );
 
             }
 
+
+            const data =
+                await response.json();
+
+
+            console.log(
+                "Discord session:",
+                data
+            );
+
+
+            /*
+             * Több lehetséges backend választ is elfogadunk.
+             */
+
+            const loggedIn =
+                data.loggedIn === true ||
+                data.authenticated === true ||
+                data.logged_in === true;
+
+
+            const user =
+                data.user ||
+                data.discordUser ||
+                data.discord ||
+                null;
+
+
+            if (loggedIn && user) {
+
+                currentUser = {
+
+                    id:
+                        user.id,
+
+                    name:
+                        user.global_name ||
+                        user.globalName ||
+                        user.username ||
+                        user.name ||
+                        "Discord User",
+
+                    username:
+                        user.username ||
+                        user.name ||
+                        "Discord User",
+
+                    avatar:
+                        user.avatar ||
+                        null,
+
+                    role:
+                        user.role ||
+                        "user"
+
+                };
+
+
+                /*
+                 * Csak akkor mentjük el, ha ténylegesen
+                 * a backend igazolta a bejelentkezést.
+                 */
+
+                localStorage.setItem(
+                    "xeon_user",
+                    JSON.stringify(currentUser)
+                );
+
+
+                console.log(
+                    "SIKERES DISCORD LOGIN:",
+                    currentUser
+                );
+
+
+                showAppScreen();
+
+
+                return;
+
+            }
+
+
+            /*
+             * Ha a backend 200-at ad, de még nincs
+             * user adat, várunk és újrapróbáljuk.
+             */
+
+            console.log(
+                "Backend válaszolt, de nincs aktív Discord session."
+            );
+
+
+        } catch (error) {
+
+            console.error(
+                "Discord session hiba:",
+                error
+            );
+
         }
 
 
-        currentUser = null;
+        /*
+         * Következő próbálkozás előtt várunk.
+         */
 
-        checkAuthStatus();
+        if (attempt < 5) {
+
+            await sleep(700);
+
+        }
 
     }
+
+
+    /*
+     * Ha egyik próbálkozás sem sikerült,
+     * nincs aktív session.
+     */
+
+    currentUser = null;
+
+    localStorage.removeItem("xeon_user");
+
+    showLoginScreen();
 
 }
 
 
 // =========================================================
-// AUTH ÁLLAPOT
+// APP MEGJELENÍTÉSE
 // =========================================================
 
-function checkAuthStatus() {
+function showAppScreen() {
 
     const loginScreen =
-        document.getElementById(
-            "loginScreen"
-        );
-
+        document.getElementById("loginScreen");
 
     const appScreen =
-        document.getElementById(
-            "appScreen"
-        );
+        document.getElementById("appScreen");
 
 
-    if (!loginScreen || !appScreen) {
+    if (loginScreen) {
 
-        console.error(
-            "Login/App képernyő nem található!"
-        );
-
-        return;
+        loginScreen.classList.remove("active");
 
     }
 
 
-    if (currentUser) {
+    if (appScreen) {
 
-        loginScreen.classList.remove(
-            "active"
-        );
+        appScreen.classList.add("active");
 
-
-        appScreen.classList.add(
-            "active"
-        );
+    }
 
 
-        updateUserUI();
+    updateUserUI();
 
 
-        console.log(
-            "XeonApp megnyitva:",
-            currentUser.name
-        );
+    console.log(
+        "XeonApp megnyitva:",
+        currentUser
+    );
 
-    } else {
-
-        loginScreen.classList.add(
-            "active"
-        );
+}
 
 
-        appScreen.classList.remove(
-            "active"
-        );
+// =========================================================
+// LOGIN MEGJELENÍTÉSE
+// =========================================================
+
+function showLoginScreen() {
+
+    const loginScreen =
+        document.getElementById("loginScreen");
+
+    const appScreen =
+        document.getElementById("appScreen");
+
+
+    if (loginScreen) {
+
+        loginScreen.classList.add("active");
+
+    }
+
+
+    if (appScreen) {
+
+        appScreen.classList.remove("active");
+
+    }
+
+
+    const button =
+        document.getElementById("discordLoginButton");
+
+
+    const status =
+        document.getElementById("loginStatus");
+
+
+    if (button) {
+
+        button.disabled = false;
+
+        button.innerHTML = `
+            <i class="fa-brands fa-discord mr-2"></i>
+            Bejelentkezés Discorddal
+        `;
+
+    }
+
+
+    if (status) {
+
+        status.innerText =
+            "A belépés a Discord hivatalos OAuth2 rendszerén keresztül történik.";
 
     }
 
@@ -1106,6 +401,8 @@ async function logout() {
 
                 credentials: "include",
 
+                cache: "no-store",
+
                 headers: {
                     "Accept": "application/json"
                 }
@@ -1124,18 +421,15 @@ async function logout() {
 
     currentUser = null;
 
-    localStorage.removeItem(
-        "xeon_user"
-    );
+    localStorage.removeItem("xeon_user");
 
-
-    checkAuthStatus();
+    showLoginScreen();
 
 }
 
 
 // =========================================================
-// FELHASZNÁLÓ UI
+// USER UI
 // =========================================================
 
 function updateUserUI() {
@@ -1146,26 +440,20 @@ function updateUserUI() {
 
 
     const userName =
-        document.getElementById(
-            "userName"
-        );
+        document.getElementById("userName");
 
 
     const profileName =
-        document.getElementById(
-            "profileName"
-        );
+        document.getElementById("profileName");
 
 
-    const userPointsElement =
-        document.getElementById(
-            "userPoints"
-        );
+    const profileRole =
+        document.getElementById("profileRole");
 
 
     if (userName) {
 
-        userName.innerText =
+        userName.textContent =
             currentUser.name;
 
     }
@@ -1173,21 +461,30 @@ function updateUserUI() {
 
     if (profileName) {
 
-        profileName.innerText =
+        profileName.textContent =
             currentUser.name;
 
     }
 
 
-    if (userPointsElement) {
+    if (profileRole) {
 
-        userPointsElement.innerText =
-            userPoints.toLocaleString(
-                "hu-HU"
-            ) +
-            " Pont";
+        if (currentUser.role === "admin") {
+
+            profileRole.textContent =
+                "Rendszergazda (Admin)";
+
+        } else {
+
+            profileRole.textContent =
+                "Discord felhasználó";
+
+        }
 
     }
+
+
+    updatePointsUI();
 
 
     // =====================================================
@@ -1195,26 +492,42 @@ function updateUserUI() {
     // =====================================================
 
     const profileAvatar =
-        document.getElementById(
-            "profileAvatar"
-        );
+        document.getElementById("profileAvatar");
 
 
     if (
         profileAvatar &&
-        currentUser.avatar &&
-        currentUser.id
+        currentUser.id &&
+        currentUser.avatar
     ) {
 
-        profileAvatar.innerHTML = `
+        profileAvatar.innerHTML = "";
 
-            <img
-                src="https://cdn.discordapp.com/avatars/${encodeURIComponent(currentUser.id)}/${encodeURIComponent(currentUser.avatar)}.png?size=128"
-                class="w-full h-full object-cover"
-                alt="Discord avatar"
-            >
+        const img =
+            document.createElement("img");
 
-        `;
+
+        img.src =
+            `https://cdn.discordapp.com/avatars/${encodeURIComponent(currentUser.id)}/${encodeURIComponent(currentUser.avatar)}.png?size=128`;
+
+
+        img.alt =
+            "Discord avatar";
+
+
+        img.className =
+            "w-full h-full object-cover";
+
+
+        img.onerror = () => {
+
+            profileAvatar.innerHTML =
+                `<i class="fa-brands fa-discord"></i>`;
+
+        };
+
+
+        profileAvatar.appendChild(img);
 
     }
 
@@ -1223,56 +536,30 @@ function updateUserUI() {
     // ADMIN
     // =====================================================
 
-    const profileRole =
-        document.getElementById(
-            "profileRole"
-        );
-
-
     const adminPanel =
-        document.getElementById(
-            "adminPanel"
-        );
+        document.getElementById("adminPanel");
 
 
     const adminSchedulePanel =
-        document.getElementById(
-            "adminSchedulePanel"
-        );
+        document.getElementById("adminSchedulePanel");
 
 
     const adminAddBtnContainer =
-        document.getElementById(
-            "adminAddBtnContainer"
-        );
+        document.getElementById("adminAddBtnContainer");
 
 
-    if (
-        currentUser.role === "admin"
-    ) {
-
-        if (profileRole) {
-
-            profileRole.innerText =
-                "Rendszergazda (Admin)";
-
-        }
-
+    if (currentUser.role === "admin") {
 
         if (adminPanel) {
 
-            adminPanel.classList.remove(
-                "hidden"
-            );
+            adminPanel.classList.remove("hidden");
 
         }
 
 
         if (adminSchedulePanel) {
 
-            adminSchedulePanel.classList.remove(
-                "hidden"
-            );
+            adminSchedulePanel.classList.remove("hidden");
 
         }
 
@@ -1298,38 +585,46 @@ function updateUserUI() {
 
     } else {
 
-        if (profileRole) {
-
-            profileRole.innerText =
-                "Discord felhasználó";
-
-        }
-
-
         if (adminPanel) {
 
-            adminPanel.classList.add(
-                "hidden"
-            );
+            adminPanel.classList.add("hidden");
 
         }
 
 
         if (adminSchedulePanel) {
 
-            adminSchedulePanel.classList.add(
-                "hidden"
-            );
+            adminSchedulePanel.classList.add("hidden");
 
         }
 
 
         if (adminAddBtnContainer) {
 
-            adminAddBtnContainer.innerHTML =
-                "";
+            adminAddBtnContainer.innerHTML = "";
 
         }
+
+    }
+
+}
+
+
+// =========================================================
+// PONTOK
+// =========================================================
+
+function updatePointsUI() {
+
+    const points =
+        document.getElementById("userPoints");
+
+
+    if (points) {
+
+        points.textContent =
+            userPoints.toLocaleString("hu-HU") +
+            " Pont";
 
     }
 
@@ -1346,9 +641,7 @@ function switchTab(tabId) {
         .querySelectorAll(".tab-content")
         .forEach(element => {
 
-            element.classList.remove(
-                "active"
-            );
+            element.classList.remove("active");
 
         });
 
@@ -1361,9 +654,7 @@ function switchTab(tabId) {
 
     if (target) {
 
-        target.classList.add(
-            "active"
-        );
+        target.classList.add("active");
 
     }
 
@@ -1382,9 +673,7 @@ function switchTab(tabId) {
 
 
             if (
-                button.getAttribute(
-                    "data-target"
-                ) === tabId
+                button.dataset.target === tabId
             ) {
 
                 button.classList.remove(
@@ -1400,10 +689,7 @@ function switchTab(tabId) {
         });
 
 
-    window.scrollTo(
-        0,
-        0
-    );
+    window.scrollTo(0, 0);
 
 }
 
@@ -1416,29 +702,12 @@ function claimDailyBonus() {
 
     userPoints += 250;
 
-
     localStorage.setItem(
         "xeon_points",
         userPoints
     );
 
-
-    const points =
-        document.getElementById(
-            "userPoints"
-        );
-
-
-    if (points) {
-
-        points.innerText =
-            userPoints.toLocaleString(
-                "hu-HU"
-            ) +
-            " Pont";
-
-    }
-
+    updatePointsUI();
 
     alert(
         "🎉 Sikeresen begyűjtötted a napi 250 bónusz pontot!"
@@ -1464,16 +733,12 @@ function toggleAdminPanel() {
 
 
     const panel =
-        document.getElementById(
-            "adminPanel"
-        );
+        document.getElementById("adminPanel");
 
 
     if (panel) {
 
-        panel.classList.toggle(
-            "hidden"
-        );
+        panel.classList.toggle("hidden");
 
     }
 
@@ -1501,15 +766,15 @@ function addScheduleItem() {
 
 
     const day =
-        document.getElementById(
-            "schedDay"
-        ).value.trim();
+        document.getElementById("schedDay")
+        .value
+        .trim();
 
 
     const game =
-        document.getElementById(
-            "schedGame"
-        ).value.trim();
+        document.getElementById("schedGame")
+        .value
+        .trim();
 
 
     if (!day || !game) {
@@ -1524,15 +789,11 @@ function addScheduleItem() {
 
 
     const list =
-        document.getElementById(
-            "scheduleList"
-        );
+        document.getElementById("scheduleList");
 
 
     const item =
-        document.createElement(
-            "div"
-        );
+        document.createElement("div");
 
 
     item.className =
@@ -1540,15 +801,11 @@ function addScheduleItem() {
 
 
     const content =
-        document.createElement(
-            "div"
-        );
+        document.createElement("div");
 
 
     const dayElement =
-        document.createElement(
-            "div"
-        );
+        document.createElement("div");
 
 
     dayElement.className =
@@ -1560,9 +817,7 @@ function addScheduleItem() {
 
 
     const gameElement =
-        document.createElement(
-            "div"
-        );
+        document.createElement("div");
 
 
     gameElement.className =
@@ -1573,20 +828,13 @@ function addScheduleItem() {
         game;
 
 
-    content.appendChild(
-        dayElement
-    );
+    content.appendChild(dayElement);
 
-
-    content.appendChild(
-        gameElement
-    );
+    content.appendChild(gameElement);
 
 
     const badge =
-        document.createElement(
-            "span"
-        );
+        document.createElement("span");
 
 
     badge.className =
@@ -1597,19 +845,12 @@ function addScheduleItem() {
         "Admin";
 
 
-    item.appendChild(
-        content
-    );
+    item.appendChild(content);
+
+    item.appendChild(badge);
 
 
-    item.appendChild(
-        badge
-    );
-
-
-    list.prepend(
-        item
-    );
+    list.prepend(item);
 
 
     document.getElementById(
@@ -1650,22 +891,22 @@ function addGameRecommendation() {
 
 
     const title =
-        document.getElementById(
-            "gameTitle"
-        ).value.trim();
+        document.getElementById("gameTitle")
+        .value
+        .trim();
 
 
     const img =
-        document.getElementById(
-            "gameImg"
-        ).value.trim() ||
+        document.getElementById("gameImg")
+        .value
+        .trim() ||
         "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=500";
 
 
     const link =
-        document.getElementById(
-            "gameLink"
-        ).value.trim() ||
+        document.getElementById("gameLink")
+        .value
+        .trim() ||
         "https://www.twitch.tv/xeonskorpofficial";
 
 
@@ -1687,71 +928,130 @@ function addGameRecommendation() {
 
 
     const card =
-        document.createElement(
-            "div"
-        );
+        document.createElement("div");
 
 
     card.className =
         "glass rounded-2xl overflow-hidden flex flex-col justify-between";
 
 
-    card.innerHTML = `
-
-        <div>
-
-            <div
-                class="h-44 bg-gray-800 bg-cover bg-center"
-                style="background-image: url('${escapeHtml(img)}');"
-            ></div>
-
-            <div class="p-3">
-
-                <h3 class="font-bold text-xs text-white">
-                    ${escapeHtml(title)}
-                </h3>
-
-                <p class="text-[10px] text-indigo-400 mt-0.5">
-                    Ajánlja: ${escapeHtml(currentUser.name)}
-                </p>
-
-            </div>
-
-        </div>
-
-        <div class="p-3 pt-0 flex space-x-2">
-
-            <a
-                href="${escapeHtml(link)}"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="flex-1 bg-[#5865F2]/80 hover:bg-[#5865F2] text-center text-white text-[11px] font-bold py-1.5 rounded-xl"
-            >
-
-                <i class="fa-solid fa-globe mr-1"></i>
-
-                Link
-
-            </a>
-
-            <button
-                onclick="likeGame(this)"
-                class="bg-gray-800 hover:bg-gray-700 px-3 text-red-400 text-[11px] font-bold py-1.5 rounded-xl"
-            >
-
-                <i class="fa-solid fa-heart mr-1"></i>
-
-                <span>0</span>
-
-            </button>
-
-        </div>
-    `;
+    const top =
+        document.createElement("div");
 
 
-    container.prepend(
-        card
-    );
+    const image =
+        document.createElement("div");
+
+
+    image.className =
+        "h-44 bg-gray-800 bg-cover bg-center";
+
+
+    image.style.backgroundImage =
+        `url("${img.replaceAll('"', '\\"')}")`;
+
+
+    const content =
+        document.createElement("div");
+
+
+    content.className =
+        "p-3";
+
+
+    const titleElement =
+        document.createElement("h3");
+
+
+    titleElement.className =
+        "font-bold text-xs text-white";
+
+
+    titleElement.textContent =
+        title;
+
+
+    const author =
+        document.createElement("p");
+
+
+    author.className =
+        "text-[10px] text-indigo-400 mt-0.5";
+
+
+    author.textContent =
+        "Ajánlja: " + currentUser.name;
+
+
+    content.appendChild(titleElement);
+
+    content.appendChild(author);
+
+
+    top.appendChild(image);
+
+    top.appendChild(content);
+
+
+    const bottom =
+        document.createElement("div");
+
+
+    bottom.className =
+        "p-3 pt-0 flex space-x-2";
+
+
+    const linkButton =
+        document.createElement("a");
+
+
+    linkButton.href = link;
+
+    linkButton.target = "_blank";
+
+    linkButton.rel =
+        "noopener noreferrer";
+
+
+    linkButton.className =
+        "flex-1 bg-[#5865F2]/80 hover:bg-[#5865F2] text-center text-white text-[11px] font-bold py-1.5 rounded-xl";
+
+
+    linkButton.innerHTML =
+        `<i class="fa-solid fa-globe mr-1"></i>Link`;
+
+
+    const likeButton =
+        document.createElement("button");
+
+
+    likeButton.className =
+        "bg-gray-800 hover:bg-gray-700 px-3 text-red-400 text-[11px] font-bold py-1.5 rounded-xl";
+
+
+    likeButton.innerHTML =
+        `<i class="fa-solid fa-heart mr-1"></i><span>0</span>`;
+
+
+    likeButton.onclick =
+        function () {
+
+            likeGame(this);
+
+        };
+
+
+    bottom.appendChild(linkButton);
+
+    bottom.appendChild(likeButton);
+
+
+    card.appendChild(top);
+
+    card.appendChild(bottom);
+
+
+    container.prepend(card);
 
 
     document.getElementById(
@@ -1775,46 +1075,13 @@ function addGameRecommendation() {
 
 
 // =========================================================
-// HTML ESCAPE
-// =========================================================
-
-function escapeHtml(value) {
-
-    return String(value)
-        .replaceAll(
-            "&",
-            "&amp;"
-        )
-        .replaceAll(
-            "<",
-            "&lt;"
-        )
-        .replaceAll(
-            ">",
-            "&gt;"
-        )
-        .replaceAll(
-            '"',
-            "&quot;"
-        )
-        .replaceAll(
-            "'",
-            "&#039;"
-        );
-
-}
-
-
-// =========================================================
 // LIKE
 // =========================================================
 
 function likeGame(button) {
 
     const span =
-        button.querySelector(
-            "span"
-        );
+        button.querySelector("span");
 
 
     if (!span) {
@@ -1822,10 +1089,8 @@ function likeGame(button) {
     }
 
 
-    span.innerText =
-        parseInt(
-            span.innerText || "0"
-        ) + 1;
+    span.textContent =
+        parseInt(span.textContent || "0", 10) + 1;
 
 }
 
@@ -1847,21 +1112,7 @@ function buyItem(cost) {
         );
 
 
-        const points =
-            document.getElementById(
-                "userPoints"
-            );
-
-
-        if (points) {
-
-            points.innerText =
-                userPoints.toLocaleString(
-                    "hu-HU"
-                ) +
-                " Pont";
-
-        }
+        updatePointsUI();
 
 
         alert(
@@ -1886,9 +1137,7 @@ function buyItem(cost) {
 function sendChatMessage() {
 
     const input =
-        document.getElementById(
-            "chatInput"
-        );
+        document.getElementById("chatInput");
 
 
     const text =
@@ -1912,15 +1161,11 @@ function sendChatMessage() {
 
 
     const chatContainer =
-        document.getElementById(
-            "chatMessages"
-        );
+        document.getElementById("chatMessages");
 
 
     const msgDiv =
-        document.createElement(
-            "div"
-        );
+        document.createElement("div");
 
 
     msgDiv.className =
@@ -1928,9 +1173,7 @@ function sendChatMessage() {
 
 
     const username =
-        document.createElement(
-            "span"
-        );
+        document.createElement("span");
 
 
     username.className =
@@ -1941,9 +1184,7 @@ function sendChatMessage() {
         currentUser.name + ":";
 
 
-    msgDiv.appendChild(
-        username
-    );
+    msgDiv.appendChild(username);
 
 
     msgDiv.appendChild(
@@ -1953,9 +1194,7 @@ function sendChatMessage() {
     );
 
 
-    chatContainer.appendChild(
-        msgDiv
-    );
+    chatContainer.appendChild(msgDiv);
 
 
     chatContainer.scrollTop =
@@ -1973,9 +1212,7 @@ function sendChatMessage() {
 
 function requestPushPermission() {
 
-    if (
-        !("Notification" in window)
-    ) {
+    if (!("Notification" in window)) {
 
         alert(
             "A böngésződ nem támogatja a push értesítéseket."
@@ -1990,9 +1227,7 @@ function requestPushPermission() {
         .requestPermission()
         .then(permission => {
 
-            if (
-                permission === "granted"
-            ) {
+            if (permission === "granted") {
 
                 alert(
                     "🔔 Push értesítések engedélyezve!"
@@ -2010,7 +1245,17 @@ function requestPushPermission() {
 
 }
 
-</script>
 
-</body>
-</html>
+// =========================================================
+// SEGÉDFÜGGVÉNY
+// =========================================================
+
+function sleep(ms) {
+
+    return new Promise(
+        resolve => setTimeout(resolve, ms)
+    );
+
+}
+
+</script>
