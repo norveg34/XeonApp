@@ -2,23 +2,24 @@
 <html lang="hu">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>XeonApp - Streamer Közösség</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>XeonApp</title>
     
-    <!-- PWA Manifest & Meta -->
-    <meta name="theme-color" content="#0d1117">
+    <!-- iOS / PWA Teljeskörű Meta Tag-ek -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="XeonApp">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2111/2111370.png">
     
-    <link rel="manifest" href="data:application/manifest+json;charset=utf-8,%7B%22name%22%3A%22XeonApp%22%2C%22short_name%22%3A%22XeonApp%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%230d1117%22%2C%22theme_color%22%3A%22%235865F2%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22https%3A%2F%2Fcdn-icons-png.flaticon.com%2F512%2F2111%2F2111370.png%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fpng%22%7D%5D%7D">
+    <!-- Manifest hivatkozás -->
+    <link rel="manifest" href="manifest.json">
     
     <!-- Tailwind & FontAwesome -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        body { background-color: #0d1117; color: #e6edf3; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        body { background-color: #0d1117; color: #e6edf3; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
         .glass { background: rgba(22, 27, 34, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
@@ -36,14 +37,14 @@
             </div>
             <div>
                 <h1 class="text-2xl font-black text-white tracking-wide">XeonApp</h1>
-                <p class="text-xs text-gray-400 mt-1">Lépj be a hivatalos Discord fiókoddal a folytatáshoz</p>
+                <p class="text-xs text-gray-400 mt-1">Lépj be a Discord fiókoddal a folytatáshoz</p>
             </div>
 
-            <button onclick="redirectToDiscord()" class="w-full bg-[#5865F2] hover:bg-[#4752C4] text-white font-bold text-sm py-3.5 rounded-2xl flex items-center justify-center space-x-3 shadow-lg shadow-[#5865F2]/40 transition transform active:scale-95">
+            <button onclick="loginWithDiscord()" class="w-full bg-[#5865F2] hover:bg-[#4752C4] text-white font-bold text-sm py-3.5 rounded-2xl flex items-center justify-center space-x-3 shadow-lg shadow-[#5865F2]/40 transition transform active:scale-95">
                 <i class="fa-brands fa-discord text-lg"></i>
                 <span>Discord Bejelentkezés</span>
             </button>
-            <p class="text-[10px] text-gray-500">Biztonságos OAuth2 hitelesítés GitHub Pages-en.</p>
+            <p class="text-[10px] text-gray-500">iOS és Android PWA támogatás.</p>
         </div>
     </div>
 
@@ -201,7 +202,7 @@
         </main>
 
         <!-- ALSÓ NAVIGÁCIÓ -->
-        <nav class="glass fixed bottom-0 left-0 right-0 z-30 px-2 py-2 flex justify-around items-center border-t border-gray-800">
+        <nav class="glass fixed bottom-0 left-0 right-0 z-30 px-2 py-2 flex justify-around items-center border-t border-gray-800 pb-safe">
             <button onclick="switchTab('home')" class="nav-btn flex flex-col items-center text-[#5865F2]" data-target="home">
                 <i class="fa-solid fa-house text-base"></i>
                 <span class="text-[10px] mt-1">Főoldal</span>
@@ -227,45 +228,13 @@
 
     <!-- LOGIKA SCRIPT -->
     <script>
-        // ÍRD BE IDE A DISCORD DEVELOPER PORTALON KAPOTT CLIENT ID-DAT:
-        const DISCORD_CLIENT_ID = "1557476441237753866"; 
-
+        const ADMIN_SECRET_PIN = "xeon2026";
         let currentUser = JSON.parse(localStorage.getItem('xeon_user')) || null;
         let userPoints = parseInt(localStorage.getItem('xeon_points')) || 1250;
 
         document.addEventListener('DOMContentLoaded', () => {
-            const fragment = window.location.hash.substring(1);
-            const params = new URLSearchParams(fragment);
-            const accessToken = params.get('access_token');
-
-            if (accessToken) {
-                fetch('https://discord.com/api/users/@me', {
-                    headers: { authorization: `Bearer ${accessToken}` }
-                })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.username) {
-                        const username = data.username;
-                        const role = (username.toLowerCase() === 'norveg34') ? 'admin' : 'viewer';
-                        
-                        currentUser = { name: username, role: role };
-                        localStorage.setItem('xeon_user', JSON.stringify(currentUser));
-                        
-                        window.history.replaceState({}, document.title, window.location.pathname);
-                        checkAuthStatus();
-                    }
-                })
-                .catch(err => console.error('Discord API hiba:', err));
-            } else {
-                checkAuthStatus();
-            }
+            checkAuthStatus();
         });
-
-        function redirectToDiscord() {
-            const redirectUri = window.location.origin + window.location.pathname;
-            const discordAuthUrl = `https://discord.com/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=token&scope=identify`;
-            window.location.href = discordAuthUrl;
-        }
 
         function checkAuthStatus() {
             if (currentUser) {
@@ -276,6 +245,27 @@
                 document.getElementById('loginScreen').classList.add('active');
                 document.getElementById('appScreen').classList.remove('active');
             }
+        }
+
+        function loginWithDiscord() {
+            let username = prompt("Add meg a Discord neved a belépéshez:");
+            if (!username) return;
+            username = username.trim();
+
+            let role = 'viewer';
+            if (username.toLowerCase() === 'norveg34' || username.toLowerCase() === 'xeonskorp') {
+                let pin = prompt("Add meg a titkos admin PIN-kódot:");
+                if (pin === ADMIN_SECRET_PIN) {
+                    role = 'admin';
+                } else {
+                    alert('Hibás PIN-kód! Nézőként léptettünk be.');
+                    role = 'viewer';
+                }
+            }
+            
+            currentUser = { name: username, role: role };
+            localStorage.setItem('xeon_user', JSON.stringify(currentUser));
+            checkAuthStatus();
         }
 
         function logout() {
@@ -337,7 +327,7 @@
 
         function addScheduleItem() {
             const day = document.getElementById('schedDay').value;
-            const game = document.getElementById('schedGame').value;
+            const game = document.getElementById('schedGame'].value;
             if(!day || !game) { alert('Töltsd ki mindkét mezőt!'); return; }
 
             const list = document.getElementById('scheduleList');
