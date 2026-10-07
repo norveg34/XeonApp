@@ -5,13 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>XeonApp - Streamer Közösség</title>
     
-    <!-- PWA Manifest & Meta -->
+    <!-- PWA Meta Tag-ek -->
     <meta name="theme-color" content="#0d1117">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="XeonApp">
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2111/2111370.png">
-    
     <link rel="manifest" href="manifest.json">
     
     <!-- Tailwind & FontAwesome -->
@@ -20,7 +19,7 @@
     
     <style>
         body { background-color: #0d1117; color: #e6edf3; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
-        .glass { background: rgba(22, 27, 34, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .glass { background: rgba(22, 27, 34, 0.90); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
         .screen-view { display: none; }
@@ -29,7 +28,7 @@
 </head>
 <body class="pb-20">
 
-    <!-- 1. LOGIN SCREEN -->
+    <!-- 1. LOGIN SCREEN (PWA-barát beépített űrlap) -->
     <div id="loginScreen" class="screen-view active fixed inset-0 z-50 bg-[#0d1117] flex flex-col items-center justify-center p-6 text-center">
         <div class="glass w-full max-w-sm p-8 rounded-3xl space-y-5 border-[#5865F2]/40 shadow-2xl shadow-[#5865F2]/20">
             <div class="w-20 h-20 rounded-3xl bg-[#5865F2] flex items-center justify-center font-bold text-white mx-auto text-4xl shadow-lg shadow-[#5865F2]/50">
@@ -37,22 +36,24 @@
             </div>
             <div>
                 <h1 class="text-2xl font-black text-white tracking-wide">XeonApp</h1>
-                <p class="text-xs text-gray-400 mt-1">Lépj be a hivatalos Discord fiókoddal a folytatáshoz</p>
+                <p class="text-xs text-gray-400 mt-1">Add meg a Discord neved a belépéshez</p>
             </div>
 
-            <button onclick="redirectToDiscord()" class="w-full bg-[#5865F2] hover:bg-[#4752C4] text-white font-bold text-sm py-3.5 rounded-2xl flex items-center justify-center space-x-3 shadow-lg shadow-[#5865F2]/40 transition transform active:scale-95">
-                <i class="fa-brands fa-discord text-lg"></i>
-                <span>Discord Bejelentkezés</span>
-            </button>
-
-            <!-- BIZTONSÁGI / GYORS TOVÁBB GOMB (Ha az OAuth átirányítás mobilon akadna) -->
-            <div class="pt-2 border-t border-gray-800 space-y-2">
-                <p class="text-[10px] text-gray-400">Vagy gyors admin/tag belépés névvel:</p>
-                <div class="flex space-x-2">
-                    <input type="text" id="quickName" placeholder="Add meg a neved..." class="flex-1 bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-[#5865F2]">
-                    <button onclick="quickLogin()" class="bg-gray-800 hover:bg-gray-700 text-indigo-300 px-4 py-2 rounded-xl text-xs font-bold">Belépés</button>
+            <div class="space-y-3 text-left">
+                <div>
+                    <label class="text-[11px] text-gray-400 font-bold ml-1 mb-1 block">Discord Felhasználónév</label>
+                    <input type="text" id="loginUsername" placeholder="pl. norveg34" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#5865F2]">
+                </div>
+                <div>
+                    <label class="text-[11px] text-gray-400 font-bold ml-1 mb-1 block">Admin PIN (Csak adminoknak)</label>
+                    <input type="password" id="loginPin" placeholder="Hagyd üresen, ha néző vagy" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#5865F2]">
                 </div>
             </div>
+
+            <button onclick="handleLogin()" class="w-full bg-[#5865F2] hover:bg-[#4752C4] text-white font-bold text-sm py-3.5 rounded-2xl shadow-lg shadow-[#5865F2]/40 transition transform active:scale-95">
+                <i class="fa-brands fa-discord mr-2"></i> Bejelentkezés
+            </button>
+            <p class="text-[10px] text-gray-500">PWA mód aktív – a telefonod megjegyzi a belépést.</p>
         </div>
     </div>
 
@@ -171,7 +172,7 @@
                             <div class="h-44 bg-gray-800 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1542751371-adc38448a05e?w=500');"></div>
                             <div class="p-3">
                                 <h3 class="font-bold text-xs text-white">Nested Lands</h3>
-                                <p class="text-[10px] text-indigo-400 mt-0.5" id="recAuthor">Ajánlja: norveg34</p>
+                                <p class="text-[10px] text-indigo-400 mt-0.5">Ajánlja: norveg34</p>
                             </div>
                         </div>
                         <div class="p-3 pt-0 flex space-x-2">
@@ -236,67 +237,40 @@
 
     <!-- LOGIKA SCRIPT -->
     <script>
-        const DISCORD_CLIENT_ID = "1557476441237753866"; 
-
+        const ADMIN_SECRET_PIN = "xeon2026";
         let currentUser = JSON.parse(localStorage.getItem('xeon_user')) || null;
         let userPoints = parseInt(localStorage.getItem('xeon_points')) || 1250;
 
         document.addEventListener('DOMContentLoaded', () => {
-            const fragment = window.location.hash.substring(1);
-            const params = new URLSearchParams(fragment);
-            const accessToken = params.get('access_token');
-
-            if (accessToken) {
-                fetch('https://discord.com/api/users/@me', {
-                    headers: { authorization: `Bearer ${accessToken}` }
-                })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.username) {
-                        const username = data.username;
-                        const role = (username.toLowerCase() === 'norveg34' || username.toLowerCase() === 'xeonskorp') ? 'admin' : 'viewer';
-                        
-                        currentUser = { name: username, role: role };
-                        localStorage.setItem('xeon_user', JSON.stringify(currentUser));
-                        
-                        window.history.replaceState({}, document.title, window.location.pathname);
-                        checkAuthStatus();
-                    } else {
-                        // Ha a token lekérés hiba lenne, de visszatért, engedjük be biztonságból
-                        fallbackLogin();
-                    }
-                })
-                .catch(err => {
-                    console.error('Discord API hiba:', err);
-                    fallbackLogin();
-                });
-            } else {
-                checkAuthStatus();
+            // Service Worker regisztráció PWA-hoz
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('sw.js').catch(err => console.log('SW hiba:', err));
             }
+            checkAuthStatus();
         });
 
-        function fallbackLogin() {
-            if (!currentUser) {
-                currentUser = { name: "norveg34", role: "admin" };
-                localStorage.setItem('xeon_user', JSON.stringify(currentUser));
-            }
-            checkAuthStatus();
-        }
+        function handleLogin() {
+            const usernameInput = document.getElementById('loginUsername').value.trim();
+            const pinInput = document.getElementById('loginPin').value;
 
-        function quickLogin() {
-            let name = document.getElementById('quickName').value.trim();
-            if (!name) name = "norveg34";
-            const role = (name.toLowerCase() === 'norveg34' || name.toLowerCase() === 'xeonskorp') ? 'admin' : 'viewer';
-            
-            currentUser = { name: name, role: role };
+            if (!usernameInput) {
+                alert('Add meg a Discord neved!');
+                return;
+            }
+
+            let role = 'viewer';
+            if (usernameInput.toLowerCase() === 'norveg34' || usernameInput.toLowerCase() === 'xeonskorp') {
+                if (pinInput === ADMIN_SECRET_PIN) {
+                    role = 'admin';
+                } else {
+                    alert('Hibás admin PIN-kód! Nézőként léptettünk be.');
+                    role = 'viewer';
+                }
+            }
+
+            currentUser = { name: usernameInput, role: role };
             localStorage.setItem('xeon_user', JSON.stringify(currentUser));
             checkAuthStatus();
-        }
-
-        function redirectToDiscord() {
-            const redirectUri = window.location.origin + window.location.pathname;
-            const discordAuthUrl = `https://discord.com/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=token&scope=identify`;
-            window.location.href = discordAuthUrl;
         }
 
         function checkAuthStatus() {
