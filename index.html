@@ -29,8 +29,20 @@
 </head>
 <body class="pb-20">
 
+    <!-- IOS TELEPÍTÉSI SEGÉDLET SÁV (Csak iPhone/iPad Safari böngészőben látszik, ha még nincs appként megnyitva) -->
+    <div id="iosInstallBanner" class="hidden fixed bottom-16 left-4 right-4 z-50 glass bg-indigo-950/90 border border-indigo-500/50 p-3.5 rounded-2xl shadow-2xl flex items-center justify-between text-xs">
+        <div class="flex items-center space-x-3">
+            <i class="fa-brands fa-apple text-2xl text-indigo-400"></i>
+            <div>
+                <p class="font-bold text-white">Add hozzá a Főképernyőhöz!</p>
+                <p class="text-[10px] text-gray-300 mt-0.5">Koppints a <i class="fa-solid fa-arrow-up-from-bracket text-indigo-300 px-0.5"></i> gombra alul, majd a <b>"Főképernyőhöz adás"</b> opcióra.</p>
+            </div>
+        </div>
+        <button onclick="dismissIosBanner()" class="text-gray-400 hover:text-white px-2 py-1 font-bold">✕</button>
+    </div>
+
     <!-- 1. LOGIN SCREEN -->
-    <div id="loginScreen" class="screen-view active fixed inset-0 z-50 bg-[#0d1117] flex flex-col items-center justify-center p-6 text-center">
+    <div id="loginScreen" class="screen-view active fixed inset-0 z-40 bg-[#0d1117] flex flex-col items-center justify-center p-6 text-center">
         <div class="glass w-full max-w-sm p-8 rounded-3xl space-y-6 border-[#5865F2]/40 shadow-2xl shadow-[#5865F2]/20">
             <div class="w-20 h-20 rounded-3xl bg-[#5865F2] flex items-center justify-center font-bold text-white mx-auto text-4xl shadow-lg shadow-[#5865F2]/50">
                 <i class="fa-brands fa-discord"></i>
@@ -44,14 +56,14 @@
                 <i class="fa-brands fa-discord text-lg"></i>
                 <span>Discord Bejelentkezés</span>
             </button>
-            <p class="text-[10px] text-gray-500">iOS és Android PWA támogatás.</p>
+            <p class="text-[10px] text-gray-500">Biztonságos mobil hitelesítés.</p>
         </div>
     </div>
 
     <!-- 2. MAIN APP SCREEN -->
     <div id="appScreen" class="screen-view">
         <!-- FELSŐ LÉC -->
-        <header class="glass sticky top-0 z-40 px-4 py-3 flex justify-between items-center border-b border-gray-800">
+        <header class="glass sticky top-0 z-30 px-4 py-3 flex justify-between items-center border-b border-gray-800">
             <div class="flex items-center space-x-2">
                 <div class="w-9 h-9 rounded-xl bg-[#5865F2] flex items-center justify-center font-bold text-white shadow-lg shadow-[#5865F2]/30"><i class="fa-brands fa-discord"></i></div>
                 <span class="font-bold text-lg tracking-wide text-white">XeonApp</span>
@@ -234,7 +246,26 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             checkAuthStatus();
+            checkIosInstallPrompt();
         });
+
+        function checkIosInstallPrompt() {
+            // Megnézzük, hogy iOS (iPhone/iPad) böngésző-e, és még NINCS-E standalone (app) módban futtatva
+            const isIos = /iphone|ipad|ipod/.test(navigator.userAgent.toLowerCase());
+            const isInStandaloneMode = ('standalone' in window.navigator) && (window.navigator.standalone);
+
+            if (isIos && !isInStandaloneMode) {
+                // Megjelenítjük a segédlet sávot, ha még nem zárta be
+                if (!localStorage.getItem('ios_banner_dismissed')) {
+                    document.getElementById('iosInstallBanner').classList.remove('hidden');
+                }
+            }
+        }
+
+        function dismissIosBanner() {
+            document.getElementById('iosInstallBanner').classList.add('hidden');
+            localStorage.setItem('ios_banner_dismissed', 'true');
+        }
 
         function checkAuthStatus() {
             if (currentUser) {
@@ -327,7 +358,7 @@
 
         function addScheduleItem() {
             const day = document.getElementById('schedDay').value;
-            const game = document.getElementById('schedGame'].value;
+            const game = document.getElementById('schedGame').value;
             if(!day || !game) { alert('Töltsd ki mindkét mezőt!'); return; }
 
             const list = document.getElementById('scheduleList');
